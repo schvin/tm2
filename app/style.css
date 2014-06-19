@@ -13,13 +13,10 @@ pre:not(.hidden) ~ .empty-state { display: none;}
 
 /* Editor tabs */
 #tabs {
-  padding-left: 115px;
+  padding-left: 45px;
   padding-right: 60px;
 }
-#tabs .template-tab {
-  left: 85px;
-  top: 5px;
-}
+#tabs .template-tab { width: 40px;}
 #tabs .carto-tabs a.tab {
   height: 30px;
   display: inline-block;

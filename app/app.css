@@ -619,11 +619,12 @@ fieldset section.keyline-bottom { border-bottom-color:rgba(0,0,0,.2) !important;
 .CodeMirror pre { padding:0; }
 .CodeMirror-linenumber {
   z-index: 50!important;
+  left: -1px !important;
   pointer-events: none;
 }
 
 .CodeMirror-gutters {
-  border:none;
+  border-right: 1px solid rgba(0,0,0,.1);
   background:#fcfcfc;
   width:40px!important;
   }
@@ -725,8 +726,11 @@ span.cm-carto-filter             { color:#66475B; }
   left: 115px;
 }
 
-#title .avatar { width: 40px; height: 40px; }
-.round-bottomright { border-radius:0px 0px 3px 0px; }
+#title .avatar img {
+  margin-right: 5px;
+  width: 20px;
+  height: 20px;
+}
 
 #docs:target > .pin-left,
 #fonts:target > .pin-left,
