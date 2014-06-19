@@ -194,11 +194,15 @@ fieldset section.keyline-bottom { border-bottom-color:rgba(0,0,0,.2) !important;
 .project.proj-active .proj-status { display: block;}
 
 .project-name {
-  max-width: 240px;
+  max-width: 50%;
   vertical-align: top;
 }
 
 /* Project settings */
+#title {
+  padding-bottom: 0;
+}
+
 #user,
 #settings {
   height: 100%;
@@ -624,7 +628,7 @@ fieldset section.keyline-bottom { border-bottom-color:rgba(0,0,0,.2) !important;
 }
 
 .CodeMirror-gutters {
-  border-right: 1px solid rgba(0,0,0,.1);
+  border:none;
   background:#fcfcfc;
   width:40px!important;
   }
@@ -726,7 +730,7 @@ span.cm-carto-filter             { color:#66475B; }
   left: 115px;
 }
 
-#title .avatar img {
+.avatar img {
   margin-right: 5px;
   width: 20px;
   height: 20px;

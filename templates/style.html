@@ -177,27 +177,27 @@
   <ul id='search-results' class='clip fill-light scroll-styled round-bottom'></ul>
 </form>
 
-<div id='full' class='z1 clip animate pin-left'>
-  <div id='title' class='col12 contain fill-white inline pin-topleft z1'>
-    <span class='col12 inline clip fill-darken2 dark row1'><!--
-    --><strong class='unround icon paint project-name small js-name inline pad1 truncate'><%= style.name || 'Untitled' %></strong><!--
-      --><a href='#user' class='keyline-right button unround quiet avatar'><img class='dot' src='<%= user.avatar %>' />Projects</a><!--
-      --><span class='row1 pad0 inline'><!--
-      --><a href='#settings' class='icon round-left short sprocket button quiet'>Settings</a><!--
-      <% if (style._tmp) { %>
-      --><a class='js-saveas round-right short button icon inline floppy'>Save as</a><!--
-      <% } else { %>
-      --><a class='js-save round-right short button icon inline floppy' href='#'>Save</a><!--
-      <% } %>
-    --></span>
-    <div class='pin-topright z1 row1'><!--
+<div id='global-settings' class='fill-darken3 dark pin-topleft z10'>
+  <a href='#user' class='button quiet unround avatar'><img class='dot' src='<%= user.avatar %>' />Projects</a>
+    <div class='inline'><!--
     --><a title='Documentation' class='pad1 inline quiet docs-n icon help unround align-middle keyline-right' href='#docs'></a><!--
       --><a title='Documentation' class='pad1 inline dark docs-y icon help unround align-middle fill-darken2 keyline-right' href='#'></a><!--
-      --><a title='Data layers' class='pad1 inline quiet layers-n icon point-line align-middle keyline-right' href='#layers'></a><!--
-      --><a title='Data layers' class='pad1 inline dark layers-y icon point-line unround align-middle fill-darken2 keyline-right' href='#'></a>
-    </div>
+  --></div>
+</div>
 
+  <div id='title' class='col6 fill-white pad1 pin-topright z10'>
+    <h3 class='unround icon paint project-name js-name inline pad0y truncate'><%= style.name || 'Untitled' %></h3><!--
+    --><span class='fr inline'><!--
+    --><a href='#settings' class='icon round-left short sprocket button quiet'>Settings</a><!--
+    <% if (style._tmp) { %>
+    --><a class='js-saveas round-right short button icon inline floppy'>Save as</a><!--
+    <% } else { %>
+    --><a class='js-save round-right short button icon inline floppy' href='#'>Save</a><!--
+    <% } %>
+  --></span>
   </div>
+
+<div id='full' class='z1 clip animate pin-left'>
   <div id='map' class='animate' style='background-color:<%=style.background%>;'></div>
   <div id='map-overlay' class='overlay'></div>
   <div id='map-errors'></div>
@@ -302,17 +302,21 @@
   </div>
 </div>
 
-<div id='style-ui' class='animate z1 col6 pin-right fill-light'>
+<div id='style-ui' class='animate z1 col6 pin-right fill-white'>
   <div id='code' class='z1 pin-left col12'>
-  <div class='row1 fill-light pin-top'>
-    <nav id='tabs' class='keyline-left row1 keyline-bottom pad0y pin-top fill-darken0 contain small'>
-      <a rel='template' href='#code-template' class='inline pin-topleft pad1 keyline-right template-tab tab js-tab quiet icon tooltip'></a>
+  <div class='row1 fill-white pin-top'>
+    <div class='pin-bottomleft z1'><!--
+      --><a title='Data layers' class='pad1x pad0y inline quiet layers-n icon point-line align-middle' href='#layers'></a><!--
+      --><a title='Data layers' class='pad1x pad0y inline dark layers-y icon point-line unround align-middle fill-darken2' href='#'></a>
+    </div>
+    <nav id='tabs' class='row1 keyline-bottom pin-top contain small'>
+      <a rel='template' href='#code-template' class='hidden pin-topleft pad1 keyline-right template-tab tab js-tab quiet icon tooltip'></a>
       <div class='center carto-tabs'><!--
       <% _(style.styles).keys().forEach(function(k,i) { %>
-      --><a rel='<%=k%>' href='#code-<%=k.replace(/[^\w+]/g,'_')%>' class='strong quiet tab js-tab round pad0y pad1x truncate <%=!i?'active':''%>'><%=k.replace(/.mss/,'')%> <span class='icon trash js-deltab pin-topright pad1y pad0x round'></span></a><!--
+      --><a rel='<%=k%>' href='#code-<%=k.replace(/[^\w+]/g,'_')%>' class='strong quiet tab js-tab round pad0y pad1x truncate <%=!i?'active':''%>'><%=k.replace(/.mss/,'')%> <span class='icon trash js-deltab pin-bottomright pad0 round'></span></a><!--
       <% }); %>
       --></div>
-      <a href='#' class='js-addtab addtab quiet icon plus pad1y pad0x z1 pin-topright'></a>
+      <a href='#' class='js-addtab addtab quiet icon plus pad0 z1 pin-bottomright'></a>
     </nav>
   </div>
 

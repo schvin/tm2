@@ -3,6 +3,8 @@
 #source-ui,
 #print-ui { box-shadow: rgba(0,0,0,0.1) -2px 0px 0px; }
 
+#style-ui { top: 40px; }
+
 /* Interactivity form */
 #interactivity .content     { max-height:80px; }
 #interactivity .content pre { padding:0; }
@@ -13,18 +15,31 @@ pre:not(.hidden) ~ .empty-state { display: none;}
 
 /* Editor tabs */
 #tabs {
-  padding-left: 45px;
+  padding-left: 40px;
   padding-right: 60px;
 }
-#tabs .template-tab { width: 40px;}
 #tabs .carto-tabs a.tab {
-  height: 30px;
-  display: inline-block;
-  vertical-align: top;
+    height: 30px;
+    margin-top: 10px;
+    display: inline-block;
+    border-top: 1px solid rgba(0,0,0,.1);
+    border-left: 1px solid rgba(0,0,0,.1);
+    border-bottom: 0;
+    border-radius: 0;
+    vertical-align: top;
+}
+
+#tabs .carto-tabs a.tab:first-child {
+    border-top-left-radius: 3px;
+}
+
+#tabs .carto-tabs a.tab:last-child {
+    border-top-right-radius: 3px;
+    border-right: 1px solid rgba(0,0,0,.1);
 }
 
 #tabs a.tab:hover { color: rgba(0,0,0,.75));}
-#tabs a.tab.active { background:white;}
+#tabs a.tab.active { background:#f8f8f8;}
 
 #tabs .addtab { right:30px;}
 
