@@ -282,7 +282,7 @@
 <div id='style-ui' class='animate z1 col6 pin-right fill-white'>
 
   <div id='title' class='col12 pad1 pin-top'>
-    <h3 class='unround icon paint project-name col6 js-name inline pad0y truncate'><%= style.name || 'Untitled' %></h3><!--
+    <h3 class='unround project-name col6 js-name inline pad0y truncate'><%= style.name || 'Untitled' %></h3><!--
     --><div class='col6 pill'><!--
     --><a href='#settings' class='col6 icon round-left short sprocket button'>Settings</a><!--
     <% if (style._tmp) { %>
@@ -300,7 +300,7 @@
       --><a title='Data layers' class='pad1x pad0y inline dark layers-y icon point-line unround align-middle fill-darken2' href='#'></a>
     </div>
     <nav id='tabs' class='row1 keyline-bottom pin-top contain small'>
-      <a rel='template' href='#code-template' class='pin-bottomright pad0 keyline-right template-tab tab js-tab quiet icon tooltip'></a>
+      <a rel='template' href='#code-template' class='pin-bottomright pad0 template-tab tab js-tab quiet icon tooltip'></a>
       <div class='carto-tabs'><!--
       <% _(style.styles).keys().forEach(function(k,i) { %>
       --><a rel='<%=k%>' href='#code-<%=k.replace(/[^\w+]/g,'_')%>' class='strong quiet tab js-tab round pad0y contain pad1x truncate <%=!i?'active':''%>'><%=k.replace(/.mss/,'')%> <span class='icon trash js-deltab pin-bottomright pad0y'></span></a><!--
