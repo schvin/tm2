@@ -3,7 +3,12 @@
 #source-ui,
 #print-ui { box-shadow: rgba(0,0,0,0.1) -2px 0px 0px; }
 
-#style-ui { top: 40px; }
+#settings .megamenu {
+    left: auto;
+    top: 50px;
+    bottom: 0;
+    right: 0;
+}
 
 /* Interactivity form */
 #interactivity .content     { max-height:80px; }
@@ -27,6 +32,7 @@ pre:not(.hidden) ~ .empty-state { display: none;}
     border-bottom: 0;
     border-radius: 0;
     vertical-align: top;
+    width: 25%;
 }
 
 #tabs .carto-tabs a.tab:first-child {
@@ -47,13 +53,6 @@ pre:not(.hidden) ~ .empty-state { display: none;}
 #tabs a.tab.active .trash { display:block;}
 #tabs a.tab .trash:hover:before { opacity:1; }
 
-#tabs .carto-tabs a.tab:first-child:nth-last-child(1) { width:100%; }
-#tabs .carto-tabs a.tab:first-child:nth-last-child(2),
-#tabs .carto-tabs a.tab:first-child:nth-last-child(2) ~ a.tab  { width:50.00%; }
-#tabs .carto-tabs a.tab:first-child:nth-last-child(3),
-#tabs .carto-tabs a.tab:first-child:nth-last-child(3) ~ a.tab  { width:33.33%; }
-#tabs .carto-tabs a.tab:first-child:nth-last-child(4),
-#tabs .carto-tabs a.tab:first-child:nth-last-child(4) ~ a.tab  { width:25.00%; }
 #tabs .carto-tabs a.tab:first-child:nth-last-child(5),
 #tabs .carto-tabs a.tab:first-child:nth-last-child(5) ~ a.tab  { width:20.00%; padding-left: 3px; padding-right: 3px; font-size:10px; }
 #tabs .carto-tabs a.tab:first-child:nth-last-child(6),

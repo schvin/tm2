@@ -1,5 +1,7 @@
 /* Base candidates */
 
+.z2 { z-index: 2; }
+
 .top1 { top:40px; }
 .top2 { top:80px; }
 .bottom1 { bottom:40px; }
@@ -75,6 +77,12 @@ kbd {
 }
 
 .radio-buttons input[type=radio]:checked + label.quiet { background: rgba(255,255,255,0.25);}
+
+#global-settings {
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+}
 
 /* Modal popup */
 .modal { display:none; }
@@ -193,15 +201,9 @@ fieldset section.keyline-bottom { border-bottom-color:rgba(0,0,0,.2) !important;
 
 .project.proj-active .proj-status { display: block;}
 
-.project-name {
-  max-width: 50%;
-  vertical-align: top;
-}
+.project-name { vertical-align: top; }
 
 /* Project settings */
-#title {
-  padding-bottom: 0;
-}
 
 #user,
 #settings {
@@ -736,8 +738,6 @@ span.cm-carto-filter             { color:#66475B; }
   height: 20px;
 }
 
-#docs:target > .pin-left,
-#fonts:target > .pin-left,
 #layers:target > .pin-left {
   box-shadow: rgba(0,0,0,0.1) -2px 0px 0px;
   -webkit-transform:translateX(-100%);
@@ -799,6 +799,11 @@ a.data-y { display:none; }
 .xray-toggle.active a.xray-y { display:inline-block; }
 
 /* Carto ref docs */
+#docs .pill a { border-radius: 0; }
+
+#docs header,
+#fonts header { padding-top: 45px;}
+
 #fonts:target ~ * a.docs-n,
 #docs:target ~ * a.docs-n { display:none; }
 
