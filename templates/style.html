@@ -290,6 +290,14 @@
       --><a class='js-save round-right short button icon inline floppy' href='#'>Save</a><!--
       <% } %>
     --></div>
+      <div class='pad1 pin-topright'>
+          <div class='inline'><!--
+          --><a title='Documentation' class='round-left keyline-right button short inline quiet small docs-n icon help' href='#docs'>Help</a><!--
+            --><a title='Documentation' class='button round-left keyline-right quiet small short inline docs-y icon help fill-darken2' href='#'>Help</a><!--
+        --></div><!--
+          --><a href='#fonts' class='button quiet keyline-right icon font unround short'>Fonts</a><!--
+        --><a href='#user' class='short quiet button avatar round-right'><img class='dot' src='<%= user.avatar %>' /></a>
+        </div>
   </div>
 
   <div id='code' class='top1 z1 pin-left col12'>
@@ -352,16 +360,10 @@
 </div>
 
 <div id='global-settings' class='z10 fill-darken3 dark clip round pin-topleft'>
-  <a href='#user' class='short button avatar unround'><img class='dot' src='<%= user.avatar %>' /></a><!--
-    --><div class='inline'><!--
-    --><a title='Documentation' class='unround keyline-right button short inline quiet small docs-n icon help' href='#docs'>Help</a><!--
-      --><a title='Documentation' class='button unround keyline-right quiet small short inline docs-y icon help fill-darken2' href='#'>Help</a><!--
-  --></div><!--
-    --><a href='#fonts' class='button quiet icon font unround short'>Fonts</a>
-    <div class='pad1'>
-    <span class='small block quiet'>Editing style</span>
-    <h3 class='pad0 unround project-name js-name inline truncate'><%= style.name || 'Untitled' %></h3><a href='#projects' class='inline button quiet short'>Change</a>
-    </div>
+  <div class='pad0'>
+  <span class='pad0 small block quiet'>Editing style</span>
+  <h3 class='pad0 unround project-name js-name inline truncate'><%= style.name || 'Untitled' %></h3><a href='#projects' class='inline button quiet short'>Change</a>
+  </div>
 </div>
 
 <div class='demo-popup demo-fallback animate margin4 col4 pad2 pin-bottom bottom2 fill-blue dark z1'>
