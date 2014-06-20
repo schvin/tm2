@@ -60,7 +60,7 @@
   <a href='#' class='fill-darken1 col12 pin-left pin-bottom'></a>
   <div class='megamenu fill-light col6 pin-topleft'>
   <a class="pad1 quiet icon x pin-topright" href="#"></a>
-    <div class='pin-left col12 scroll-styled pad2 top2'>
+    <div class='pin-left col12 scroll-styled pad2 top1'>
       <fieldset>
         <section class='space-bottom1'>
           <label>Name</label>
@@ -238,10 +238,6 @@
       <a href='#' title='Toggle baselayer' class='baselayer-n inline icon mt fill-white quiet'></a>
       <a href='#' title='Toggle baselayer' class='baselayer-y inline icon mt dark fill-dark'></a>
     </span>
-    <span class='xray-toggle'>
-      <a href='#xray' title='Toggle inspector' class='xray-n inline icon eye fill-white quiet'></a>
-      <a href='#home' title='Toggle inspector' class='xray-y inline icon eye fill-dark dark'></a>
-    </span>
     <a href='#full' title='Toggle fullscreen' class='full-n inline fill-white icon fullscreen quiet'></a>
     <a href='#' title='Exit fillscreen' class='full-y fill-dark dark icon fullscreen'></a>
   </div>
@@ -282,23 +278,25 @@
 <div id='style-ui' class='animate z1 col6 pin-right fill-white'>
 
   <div id='title' class='col12 pad1 pin-top'>
-    <h3 class='unround project-name col6 js-name inline pad0y truncate'><%= style.name || 'Untitled' %></h3><!--
-    --><div class='col6 pill'><!--
-    --><a href='#settings' class='col6 icon round-left short sprocket button'>Settings</a><!--
-    <% if (style._tmp) { %>
-    --><a class='js-saveas col6 round-right short button icon inline floppy'>Save as</a><!--
-    <% } else { %>
-    --><a class='js-save col6 round-right short button icon inline floppy' href='#'>Save</a><!--
-    <% } %>
-  --></div>
+    <h3 class='unround project-name col3 js-name inline pad0y truncate'><%= style.name || 'Untitled' %></h3>
+    <div class='text-right'>
+      <div class='inline xray-toggle js-xray pad1x'>
+        <a title='Data layers' class='xray-n button short icon point-line' href='#layers'>Layers<span class='tiny layer-count fill-lighten0 round'>23</span></a>
+        <a title='Data layers' class='xray-y button loud short icon point-line' href='#'>Layers<span class='tiny layer-count fill-lighten0 round'>23</span></a>
+      </div><!--
+      --><div class='inline pill'><!--
+        --><a href='#settings' class='icon round-left short sprocket button'>Settings</a><!--
+        <% if (style._tmp) { %>
+        --><a class='js-saveas round-right short button icon inline floppy'>Save as</a><!--
+        <% } else { %>
+        --><a class='js-save round-right short button icon inline floppy' href='#'>Save</a><!--
+        <% } %>
+      --></div>
+    </div>
   </div>
 
   <div id='code' class='top1 z1 pin-left col12'>
   <div class='row1 fill-white pin-top'>
-    <div class='pin-bottomleft z1'><!--
-      --><a title='Data layers' class='pad1x pad0y inline quiet layers-n icon point-line align-middle' href='#layers'></a><!--
-      --><a title='Data layers' class='pad1x pad0y inline dark layers-y icon point-line unround align-middle fill-darken2' href='#'></a>
-    </div>
     <nav id='tabs' class='row1 keyline-bottom pin-top contain small'>
       <a rel='template' href='#code-template' class='pin-bottomright pad0 template-tab tab js-tab quiet icon tooltip'></a>
       <div class='carto-tabs'><!--

@@ -112,6 +112,7 @@ Editor.prototype.events = {
   'click .js-expandall': 'expandall',
   'click .js-upload': 'upload',
   'click .js-baselayer': 'toggleBaselayer',
+  'click .js-xray': 'toggleXRay',
   'change .js-layer-options': 'populateInteractiveVals',
   'keydown': 'keys'
 };
@@ -450,8 +451,25 @@ Editor.prototype.toggleBaselayer = function(ev) {
   }
 
   return false;
+};
+
+Editor.prototype.toggleXRay = function(ev) {
+  var $el = $(ev.currentTarget);
+
+  window.editor.refresh();
+
+  if ($el.hasClass('active')) {
+    $el.removeClass('active');
+    map.removeLayer(xray);
+    $('#map').css({'background-color':this.model.get('background')});
+  } else {
+    $el.addClass('active');
+    xray.addTo(map).bringToFront();
+    $('#map').css({'background-color':'#222'});
+  }
 
 };
+
 
 Editor.prototype.refresh = function(ev) {
   this.messageclear();
@@ -494,22 +512,6 @@ Editor.prototype.refresh = function(ev) {
   })
   .on('tileload', statHandler('drawtime'))
   .on('load', errorHandler);
-  if (window.location.hash !== '#xray') {
-    $('.xray-toggle').removeClass('active');
-    tiles.addTo(map);
-  }
-
-  // Refresh xray layer.
-  if (xray) map.removeLayer(xray);
-  xray = L.mapbox.tileLayer({
-    tiles: ['/source/{z}/{x}/{y}.png?id=' + this.model.get('source') + '&' + mtime ],
-    minzoom: this.model.get('minzoom'),
-    maxzoom: this.model.get('maxzoom')
-  });
-  if (window.location.hash === '#xray') {
-    $('.xray-toggle').addClass('active');
-    xray.addTo(map);
-  }
 
   // Refresh gridcontrol template.
   if (grids) map.removeLayer(grids);
@@ -528,17 +530,21 @@ Editor.prototype.refresh = function(ev) {
     map.addControl(gridc);
   }
 
+  // Refresh xray layer.
+  if (xray) map.removeLayer(xray);
+
+  xray = L.mapbox.tileLayer({
+    tiles: ['/source/{z}/{x}/{y}.png?id=' + this.model.get('source') + '&' + mtime ],
+    minzoom: this.model.get('minzoom'),
+    maxzoom: this.model.get('maxzoom')
+  });
+
+  tiles.addTo(map);
+
   // Refresh map title.tm.db.rm('user');
   $('title').text(this.model.get('name'));
   $('.js-name').text(this.model.get('name') || 'Untitled');
   $('.proj-active .style-name').text(this.model.get('name') || 'Untitled');
-
-  // Set canvas background color.
-  if (xray && window.location.hash === '#xray') {
-    $('#map').css({'background-color':'#222'});
-  } else if (this.model.get('background')) {
-    $('#map').css({'background-color':this.model.get('background')});
-  }
 
   return false;
 };
@@ -563,8 +569,6 @@ window.onhashchange = function(ev) {
     localStorage.setItem('style.demo', true);
     break;
   case 'home':
-  case 'xray':
-    window.editor.refresh();
     break;
   }
 };

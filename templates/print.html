@@ -124,66 +124,60 @@
       <p>Select an area to export as a static image by manipulating the bounding box, or the coordinates below. The final image will be at the same zoom level as the viewport. To verify whether your image will be correctly sized at your desired zoom level, click on the zoom in the bottom-left corner of the viewport.</p>
     </div>
   </nav>
-  <div class='js-menu-content menu-content pin-left col12 top1 bottom2 scroll-styled pad1'>
-    <div class='pad1y'>
-      <fieldset class='attributes keyline-all pad1 quiet'>
-        <div class='col12 space-bottom1'>
-          <span class='col4'>Dimensions </span>
-            <span id='pixelX' class='code'>0</span> x <span id='pixelY' class='code'>0</span> pixels
-            <em class='quiet'>(<span id='inchX'>0</span> x <span id='inchY'>0</span> inches)</em>
-        </div>
-        <div class='col12 space-bottom1'>
-          <span class='col4'>Zoom level</span>
-          <span id='zoom' class='code'><%=style.center[2]%></span>
-        </div>
-        <section class='space-bottom1'>
-          <label class='inline'>Bounds</label>
-          <span class='small quiet code inline'>[W, S, E, N]</span>
-          <input id='bboxInput' class='stretch short small' disabled='true' type='text' value='' />
-        </section>
-        <section class='space-bottom1'>
-          <label class='inline'>Center</label>
-          <span class='small quiet code inline'>[Lat, Lng]</span>
-          <input id='centerInput' class='stretch short small' disabled='true' type='text' value='' />
-        </section>
-      </fieldset>
-    </div>
-
-    <div class='pad1'>
-      <!-- <fieldset class=' space-bottom1'>
-        <section class='space-bottom1'>
-          <br>
-          <label>Attribution</label>
-          <input class='stretch short small' type='text' value= '<%=style.attribution %>'/>
-        </section>
-      </fieldset>-->
-      <fieldset class='space-bottom1'>
-          <label class='inline col4 pad1y'>Image format</label>
-          <div id='format' class='rounded-toggle inline short'>
-            <input id='png' type='radio' name='format' value='png' checked='checked'>
-            <label for='png'>png</label>
-            <input id='jpeg' type='radio' name='format' value='jpeg'>
-            <label for='jpeg'>jpeg</label>
-          </div>
-      </fieldset>
-      <fieldset class='space-bottom0'>
-          <label class='inline col4 pad1y'>Resolution</label>
-          <div id='resolution' class='rounded-toggle inline short'>
-          <% _({
-            '1': '72ppi',
-            '2': '144ppi',
-            '4': '288ppi'
-          }).each(function(label, format) { %>
-          <input value='<%= format %>' id='<%= label %>' type='radio' name='resolution' <% if (label === '288ppi') { %> checked='true' <% } %>>
-          <label for='<%= label %>'><%= label %></label>
-          <% }); %>
+  <div class='js-menu-content menu-content pin-left col12 top1 bottom2 scroll-styled pad2'>
+    <fieldset class='space-bottom2 attributes keyline-all pad1 quiet'>
+      <div class='col12 space-bottom1'>
+        <span class='col4'>Dimensions </span>
+          <span id='pixelX' class='code'>0</span> x <span id='pixelY' class='code'>0</span> pixels
+          <em class='quiet'>(<span id='inchX'>0</span> x <span id='inchY'>0</span> inches)</em>
       </div>
-     </fieldset>
-    </div>
+      <div class='col12 space-bottom1'>
+        <span class='col4'>Zoom level</span>
+        <span id='zoom' class='code'><%=style.center[2]%></span>
+      </div>
+      <section class='space-bottom1'>
+        <label class='inline'>Bounds</label>
+        <span class='small quiet code inline'>[W, S, E, N]</span>
+        <input id='bboxInput' class='stretch short small' disabled='true' type='text' value='' />
+      </section>
+      <section class='space-bottom1'>
+        <label class='inline'>Center</label>
+        <span class='small quiet code inline'>[Lat, Lng]</span>
+        <input id='centerInput' class='stretch short small' disabled='true' type='text' value='' />
+      </section>
+    </fieldset>
 
-    <div class='pad1'>
-      <a id='export' href='#' type='button' class='round col12 button disabled icon floppy' value='Download static Map' name='Export' >Download static map</a>
+    <!-- <fieldset class=' space-bottom1'>
+      <section class='space-bottom1'>
+        <br>
+        <label>Attribution</label>
+        <input class='stretch short small' type='text' value= '<%=style.attribution %>'/>
+      </section>
+    </fieldset>-->
+    <fieldset>
+        <label class='inline col4 pad1y'>Image format</label>
+        <div id='format' class='rounded-toggle inline short'>
+          <input id='png' type='radio' name='format' value='png' checked='checked'>
+          <label for='png'>png</label>
+          <input id='jpeg' type='radio' name='format' value='jpeg'>
+          <label for='jpeg'>jpeg</label>
+        </div>
+    </fieldset>
+    <fieldset class='space-bottom2'>
+        <label class='inline col4 pad1y'>Resolution</label>
+        <div id='resolution' class='rounded-toggle inline short'>
+        <% _({
+          '1': '72ppi',
+          '2': '144ppi',
+          '4': '288ppi'
+        }).each(function(label, format) { %>
+        <input value='<%= format %>' id='<%= label %>' type='radio' name='resolution' <% if (label === '288ppi') { %> checked='true' <% } %>>
+        <label for='<%= label %>'><%= label %></label>
+        <% }); %>
     </div>
+   </fieldset>
+
+    <a id='export' href='#' type='button' class='round col12 button disabled icon floppy' value='Download static Map' name='Export' >Download static map</a>
   </div>
 </div>
 

@@ -4,10 +4,15 @@
 #print-ui { box-shadow: rgba(0,0,0,0.1) -2px 0px 0px; }
 
 #settings .megamenu {
-    left: auto;
-    top: 50px;
-    bottom: 0;
-    right: 0;
+  left: auto;
+  top: 50px;
+  bottom: 0;
+  right: 0;
+}
+
+#title .layer-count {
+  margin-left: 10px;
+  padding: 0 3px;
 }
 
 /* Interactivity form */
@@ -24,15 +29,15 @@ pre:not(.hidden) ~ .empty-state { display: none;}
   padding-right: 60px;
 }
 #tabs .carto-tabs a.tab {
-    height: 30px;
-    margin-top: 10px;
-    display: inline-block;
-    border-top: 1px solid rgba(0,0,0,.1);
-    border-left: 1px solid rgba(0,0,0,.1);
-    border-bottom: 0;
-    border-radius: 0;
-    vertical-align: top;
-    width: 25%;
+  height: 30px;
+  margin-top: 10px;
+  display: inline-block;
+  border-top: 1px solid rgba(0,0,0,.1);
+  border-left: 1px solid rgba(0,0,0,.1);
+  border-bottom: 0;
+  border-radius: 0;
+  vertical-align: top;
+  width: 25%;
 }
 
 #tabs .carto-tabs a.tab:first-child {
