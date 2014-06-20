@@ -81,7 +81,6 @@ kbd {
 #global-settings {
   top: 10px;
   left: 10px;
-  z-index: 10;
 }
 
 /* Modal popup */

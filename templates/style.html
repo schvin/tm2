@@ -278,21 +278,18 @@
 <div id='style-ui' class='animate z1 col6 pin-right fill-white'>
 
   <div id='title' class='col12 pad1 pin-top'>
-    <h3 class='unround project-name col3 js-name inline pad0y pad1x truncate'><%= style.name || 'Untitled' %></h3>
-    <div class='text-right'>
-      <div class='inline xray-toggle js-xray pad1x'>
-        <a title='Data layers' class='xray-n button short icon point-line' href='#layers'>Layers<span class='tiny layer-count fill-lighten0 round'>23</span></a>
-        <a title='Data layers' class='xray-y button loud short icon point-line' href='#'>Layers<span class='tiny layer-count fill-lighten0 round'>23</span></a>
-      </div><!--
-      --><div class='inline pill'><!--
-        --><a href='#settings' class='icon round-left short sprocket button'>Settings</a><!--
-        <% if (style._tmp) { %>
-        --><a class='js-saveas round-right short button icon inline floppy'>Save as</a><!--
-        <% } else { %>
-        --><a class='js-save round-right short button icon inline floppy' href='#'>Save</a><!--
-        <% } %>
-      --></div>
-    </div>
+    <div class='inline xray-toggle js-xray pad1x'>
+      <a title='Data layers' class='xray-n button short icon point-line' href='#layers'>Layers<span class='tiny layer-count fill-lighten0 round'>23</span></a>
+      <a title='Data layers' class='xray-y button loud short icon point-line' href='#'>Layers<span class='tiny layer-count fill-lighten0 round'>23</span></a>
+    </div><!--
+    --><div class='inline pill'><!--
+      --><a href='#settings' class='icon round-left short sprocket button'>Settings</a><!--
+      <% if (style._tmp) { %>
+      --><a class='js-saveas round-right short button icon inline floppy'>Save as</a><!--
+      <% } else { %>
+      --><a class='js-save round-right short button icon inline floppy' href='#'>Save</a><!--
+      <% } %>
+    --></div>
   </div>
 
   <div id='code' class='top1 z1 pin-left col12'>
@@ -354,14 +351,17 @@
   </div>
 </div>
 
-<div id='global-settings' class='z10 fill-darken3 dark round pin-topleft'>
-  <a href='#user' class='short button avatar keyline-right round-left'><img class='dot' src='<%= user.avatar %>' /></a><!--
-  --><a href='#projects' class='button folder icon unround short'>Projects</a><!--
+<div id='global-settings' class='z10 fill-darken3 dark clip round pin-topleft'>
+  <a href='#user' class='short button avatar unround'><img class='dot' src='<%= user.avatar %>' /></a><!--
     --><div class='inline'><!--
     --><a title='Documentation' class='unround keyline-right button short inline quiet small docs-n icon help' href='#docs'>Help</a><!--
       --><a title='Documentation' class='button unround keyline-right quiet small short inline docs-y icon help fill-darken2' href='#'>Help</a><!--
   --></div><!--
-    --><a href='#fonts' class='button quiet icon font round-right short'>Fonts</a>
+    --><a href='#fonts' class='button quiet icon font unround short'>Fonts</a>
+    <div class='pad1'>
+    <span class='small block quiet'>Editing style</span>
+    <h3 class='pad0 unround project-name js-name inline truncate'><%= style.name || 'Untitled' %></h3><a href='#projects' class='inline button quiet short'>Change</a>
+    </div>
 </div>
 
 <div class='demo-popup demo-fallback animate margin4 col4 pad2 pin-bottom bottom2 fill-blue dark z1'>
