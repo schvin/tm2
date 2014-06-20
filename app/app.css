@@ -81,7 +81,7 @@ kbd {
 #global-settings {
   top: 10px;
   left: 10px;
-  z-index: 2;
+  z-index: 10;
 }
 
 /* Modal popup */
@@ -205,7 +205,7 @@ fieldset section.keyline-bottom { border-bottom-color:rgba(0,0,0,.2) !important;
 
 /* Project settings */
 
-#user,
+#projects,
 #settings {
   height: 100%;
   z-index: -10;
@@ -215,7 +215,7 @@ fieldset section.keyline-bottom { border-bottom-color:rgba(0,0,0,.2) !important;
       -ms-transition:all .125s;
           transition:all .125s;
 }
-#user:target,
+#projects:target,
 #settings:target {
   opacity: 1;
   z-index: 10;
@@ -733,7 +733,6 @@ span.cm-carto-filter             { color:#66475B; }
 }
 
 .avatar img {
-  margin-right: 5px;
   width: 20px;
   height: 20px;
 }

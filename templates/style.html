@@ -39,7 +39,7 @@
   <div id='modal-content' class='limiter contain modal-content animate'></div>
 </div>
 
-<div id='user' class='z10 col12 pin-top'>
+<div id='projects' class='z10 col12 pin-top'>
   <a href='#' class='fill-darken1 col12 pin-left pin-bottom'></a>
   <div class='megamenu caret1 fill-light col5 pin-topleft'>
     <%= this.history(obj) %>
@@ -152,7 +152,7 @@
       </small>
       <div class='pin-bottom clearfix center'><!--
       --><a href='#layers' class='small fill-darken0 pad1 col6 icon prev quiet keyline-right'>Prev</a><!--
-      --><a href='#user' class='small fill-darken0 pad1 col6 rcon next quiet'>Next</a>
+      --><a href='#projects' class='small fill-darken0 pad1 col6 rcon next quiet'>Next</a>
       </div>
     </div>
   </div>
@@ -278,7 +278,7 @@
 <div id='style-ui' class='animate z1 col6 pin-right fill-white'>
 
   <div id='title' class='col12 pad1 pin-top'>
-    <h3 class='unround project-name col3 js-name inline pad0y truncate'><%= style.name || 'Untitled' %></h3>
+    <h3 class='unround project-name col3 js-name inline pad0y pad1x truncate'><%= style.name || 'Untitled' %></h3>
     <div class='text-right'>
       <div class='inline xray-toggle js-xray pad1x'>
         <a title='Data layers' class='xray-n button short icon point-line' href='#layers'>Layers<span class='tiny layer-count fill-lighten0 round'>23</span></a>
@@ -354,8 +354,9 @@
   </div>
 </div>
 
-<div id='global-settings' class='fill-darken3 dark round pin-topleft'>
-  <a href='#user' class='button round-left short avatar'><img class='dot' src='<%= user.avatar %>' />Projects</a><!--
+<div id='global-settings' class='z10 fill-darken3 dark round pin-topleft'>
+  <a href='#user' class='short button avatar keyline-right round-left'><img class='dot' src='<%= user.avatar %>' /></a><!--
+  --><a href='#projects' class='button folder icon unround short'>Projects</a><!--
     --><div class='inline'><!--
     --><a title='Documentation' class='unround keyline-right button short inline quiet small docs-n icon help' href='#docs'>Help</a><!--
       --><a title='Documentation' class='button unround keyline-right quiet small short inline docs-y icon help fill-darken2' href='#'>Help</a><!--
