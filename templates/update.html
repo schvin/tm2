@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='UTF-8'/>
+  <link href='/base/base.css?<%=obj.nocache%>' rel='stylesheet' />
+  <link href='/app/app.css?<%=obj.nocache%>' rel='stylesheet' />
+  <link href='/app/welcome.css?<%=obj.nocache%>' rel='stylesheet' />
+  <script src='/ext/jquery-2.0.3.min.js?<%=obj.nocache%>'></script>
+  <script src='/app/atom.js?<%=obj.nocache%>'></script>
+  <%= this.analytics(obj) %>
+  <title>Mapbox Studio Classic Update Available</title>
+</head>
+<body class='col12 fill-blue'>
+
+  <div class='dark pad8y clearfix pin-left col12 fill-darken0 gradient'>
+    <div class='limiter'>
+      <div class='center'>
+        <div class='mb-logo white row1 space-bottom'></div>
+        <h1 class='space-bottom2'>
+            A new version of Mapbox Studio Classic<br/> is available
+        </h1>
+      </div>
+      <div class='col12 space-bottom2 clearfix'>
+        <div class='pad1 col6 block code text-right'>Your version: <%= version || 'Unavailable' %></div>
+        <div class='pad1 col6 block code'>Latest version: <%= latest || 'Unavailable' %></div>
+      </div>
+      <div class='col12 space-bottom2 clearfix'>
+        <div class='center margin2 col8 pill'>
+          <a href='https://www.mapbox.com/mapbox-studio-classic/' class='col6 button loud icon star'>Download the update</a>
+          <a href='/' class='col6 button icon close'>Skip upgrade</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>

@@ -1,77 +1,71 @@
-TM2 (development)
------------------
-Experimental version of TileMill powered by vector tiles. There are currently no supported releases of this software.
+Mapbox Studio Classic
+-------------
+Desktop application for vector tile driven map design.
 
-[![Build Status](https://secure.travis-ci.org/mapbox/tm2.png)](http://travis-ci.org/mapbox/tm2)
-[![Build status](https://ci.appveyor.com/api/projects/status/bfb4jhunuaqg48q5)](https://ci.appveyor.com/project/Mapbox/tm2)
-[![Dependencies](https://david-dm.org/mapbox/tm2.png)](https://david-dm.org/mapbox/tm2)
+[![Build Status](https://secure.travis-ci.org/mapbox/mapbox-studio-classic.svg)](http://travis-ci.org/mapbox/mapbox-studio-classic)
+[![Build status](https://ci.appveyor.com/api/projects/status/vmvkol2diegfo7gc?svg=true)](https://ci.appveyor.com/project/Mapbox/mapbox-studio-classic)
+[![Dependencies](https://david-dm.org/mapbox/mapbox-studio-classic.svg)](https://david-dm.org/mapbox/mapbox-studio-classic)
 
-### Install
+**[Mapbox Studio](https://www.mapbox.com/mapbox-studio/) is the modern alternative to Mapbox Studio Classic**: if you're starting out and creating a map today, we recommend starting with [Mapbox Studio](https://www.mapbox.com/mapbox-studio/) rather than Mapbox Studio Classic.
+
+### Install latest release
+
+Download the [latest release](https://www.mapbox.com/mapbox-studio-classic/) for your platform and run the packaged app.
+
+### Install from source
 
 Install [node v0.10.x](http://nodejs.org/download/). Then
 
-    git clone https://github.com/mapbox/tm2.git
-    cd tm2
+    git clone https://github.com/mapbox/mapbox-studio-classic.git
+    cd mapbox-studio-classic
     npm install
     npm start
 
-*Note: the binary dependencies of TM2 are now prebuilt for common platforms (64 bit Linux and OS X). This means that you do not need to install these dependencies externally. However if packages fail to install from a binary then you are likely running a platform for which no binaries are available. In this case you will need to build these packages from source.*
+### Depends
 
-### What are vector tiles?
+Mapbox Studio Classic ships with pre-built binaries for common platforms:
 
-Vector tiles are the vector data equivalent of image tiles for web mapping. They apply the strengths of tiling -- developed for caching, scaling and serving map imagery rapidly -- to vector data. Consider an image tile at the zxy coordinate 14/4823/6160. This image is a PNG that depicts the corner of lower Manhattan with roads, building footprints, and parks:
+  - 32 and 64 bit Windows
+  - 64 bit OS X
+  - 64 bit Linux
 
-    http://a.tiles.mapbox.com/v3/examples.map-zr0njcqy/14/4823/6160.png
+The minimum platforms versions are:
 
-A vector tile at 14/4823/6160 would contain all the corresponding geometries and metadata -- like road names, area types, building heights -- in a compact, parsable format. Vector tiles are a highly performant format that provide greater flexibility in terms of styling, output format, and interactivity.
+  - Windows >= 7
+  - OS X >= 10.8
+  - Ubuntu >= 14.04 (Trusty)
+  - RHEL/Centos >= 7
 
-                   +----------+   +----------+
-                   |          |   |          |
-                   |  vector  |   | cartocss |
-                   |   tile   +-+-+  styles  |
-                   |          | | |          |
-                   +----------+ | +----------+
-                                v
-                         +-------------+
-                         |             |
-                         |  renderer   |
-                         |             |
-                         +------+------+
-                                |
-         +---------------+------+------+---------------+
-         |               |             |               |
-    +----v-----+   +-----v----+   +----v-----+   +-----v----+
-    |          |   |          |   |          |   |          |
-    | geojson  |   | png tile |   | utf tile |   |  ??????  |
-    |          |   |          |   |          |   |          |
-    +----------+   +----------+   +----------+   +----------+
+Ubuntu 12.04 (Precise) can be supported by upgrading libstdc++:
+
+    sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+    sudo apt-get update -q
+    sudo apt-get install -y libstdc++6
+
+If packages like `node-mapnik` fail to install then you are likely running a platform for which no binaries are available. In this case you will need to build these packages from source (Feel free to create a github issue to ask for help).
+
+You can do this like:
 
 
-Vector tiles are designed to use the same tiling and coordinate scheme used by image tiles and take full advantage of HTTP. CDN caching, high scalability and efficient distribution make vector tiles a much more attractive solution than running, say, a enormous cluster of database and application servers that respond to queries on demand.
+    npm install --build-from-source
 
-Here are some rough details of our implementation at time of writing:
 
-- Vector tiles are [Protocol Buffers](http://code.google.com/p/protobuf/), a compact binary format for transferring messages.
-- Vector tiles store a serialized version of the internal data that [Mapnik](http://mapnik.org/) uses when rendering maps.
-- Vector tiles are organized into layers (e.g. roads, water, areas), which contain individual features each with a geometry and variable number of attributes per layer(e.g. name, type, etc.).
+### Getting started
 
-### TM2 architecture
+The docs offer both a step-by-step guide to creating your first projects in Mapbox Studio Classic and detailed information about styling and creating vector sources.
 
-TM2 ships with an example vector tile source: Mapbox Streets. When you create your first project you will have full access to style curated data from OpenStreetMap without setting up PostGIS, downloading and importing a large planet database file, or any of the other steps usually taken to work with OpenStreetMap data. If you have been working on styles for streets in London and want to check how well your styles apply to data in Paris, TM2 will download the vector tiles on-the-fly as you pan over to France. TM2 caches downloaded vector tiles to an MBTiles database on disk so that you can take your work offline in a limited fashion.
-
-Unlike TileMill, TM2 makes a hard split between two types of packages:
-
-- **[Styles](./HOWTO-styles.md)** contain stylesheets, basic thin metadata (name, description, attribution, etc.), and a *reference* to a datasource.
-- **[Sources](./HOWTO-sources.md)** describe a source for vector tiles, for example a URL endpoint from which to download tiles. We also have an API for generating vector tiles on the fly from traditional Mapnik datasources (shapefiles, postgis, etc) -- see [tilelive-bridge](http://github.com/mapbox/tilelive-bridge) for more info.
+- [Style quickstart](https://www.mapbox.com/guides/style-quickstart/)
+- [Source quickstart](https://www.mapbox.com/guides/source-quickstart/)
+- [Common questions](https://www.mapbox.com/guides/common-questions/)
+- [Contributing to Mapbox Studio Classic](https://github.com/mapbox/mapbox-studio-classic/blob/mb-pages/CONTRIBUTING.md)
 
 ------
 
 Build status of modules:
 
- - mapnik - [![Build Status](https://secure.travis-ci.org/mapnik/mapnik.png?branch=2.3.x)](http://travis-ci.org/mapnik/mapnik)
+ - mapnik - [![Build Status](https://secure.travis-ci.org/mapnik/mapnik.png)](http://travis-ci.org/mapnik/mapnik)
  - node-mapnik - [![Build Status](https://secure.travis-ci.org/mapnik/node-mapnik.png)](http://travis-ci.org/mapnik/node-mapnik)
  - carto - [![Build Status](https://secure.travis-ci.org/mapbox/carto.png)](http://travis-ci.org/mapbox/carto)
- - tilelive.js - [![Build Status](https://secure.travis-ci.org/mapbox/tilelive.js.png)](http://travis-ci.org/mapbox/tilelive.js)
+ - tilelive - [![Build Status](https://secure.travis-ci.org/mapbox/tilelive.png)](http://travis-ci.org/mapbox/tilelive)
  - tilelive-vector - [![Build Status](https://secure.travis-ci.org/mapbox/tilelive-vector.png)](http://travis-ci.org/mapbox/tilelive-vector)
  - tilelive-bridge - [![Build Status](https://secure.travis-ci.org/mapbox/tilelive-bridge.png)](http://travis-ci.org/mapbox/tilelive-bridge)
-

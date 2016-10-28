@@ -1,3 +1,13 @@
 .DS_Store
+_site
+.settings
+*.7z
+typings
 node_modules
+node.exe
+node.pdb
 test/fixtures-oauth/test-clone.db
+vendor/node
+vendor/node.exe
+vendor/node.pdb
+vendor/vcredist_x86.exe

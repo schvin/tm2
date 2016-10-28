@@ -51,25 +51,25 @@
 
         function getVariables() {
             var v = editor.getValue();
-            return _.uniq(v.match(/@[\w\d\-]+/));
+            return _.uniq(v.match(/@[\w\d\-]+/g));
         }
 
         function getCompletions(token, cur) {
             var against;
-            if (token.className === 'carto-value') {
+            if (token.type === 'carto-value') {
                 var l = editor.getLine(cur.line);
                 var start = l.match(/\w/);
                 var p = editor.getTokenAt({
                     line: cur.line,
                     ch: start.index + 1
                 });
-                if (p && p.className === 'carto-valid-identifier' &&
+                if (p && p.type === 'carto-valid-identifier' &&
                     kw_by_property[p.string]) {
                         against = kw_by_property[p.string];
                 }
-            } else if (token.className === 'carto-variable') {
+            } else if (token.type === 'carto-variable') {
                 against = getVariables();
-            } else if (token.className === 'carto-selector') {
+            } else if (token.type === 'carto-selector') {
                 if (token.string[0] == '.') {
                     against = classes;
                 } else {
@@ -82,14 +82,14 @@
             return _.filter(against, function(i) {
                 return i.indexOf(token.string) === 0;
             }).map(function(i) {
-                if (token.className === 'carto-value') {
+                if (token.type === 'carto-value') {
                     return i + ';';
-                } else if (token.className === 'carto-variable') {
+                } else if (token.type === 'carto-variable') {
                     return i;
-                } else if (token.className === 'carto-selector') {
+                } else if (token.type === 'carto-selector') {
                     return i + ' {';
                 } else {
-                    return i + ':';
+                    return i + ': ';
                 }
             });
         }
@@ -108,6 +108,27 @@
             // If this is not on a token that's autocompletable,
             // insert a tab.
             if (!/(@|#|\.)?[\w-$_]+$/.test(token.string)) {
+
+                if (e.which === 9 && !e.shiftKey) {
+                    // tab forwards
+                    editor.replaceRange('  ', {
+                        line: cur.line,
+                        ch: cur.ch
+                    }, {
+                        line: cur.line,
+                        ch: cur.ch
+                    });
+                } else {
+                    // tab backwards
+                    editor.replaceRange('', {
+                        line: cur.line,
+                        ch: cur.ch - 2
+                    }, {
+                        line: cur.line,
+                        ch: cur.ch
+                    });
+                }
+
                 editor.focus();
                 return !/^\s*$/.test(token.string);
             }
@@ -150,7 +171,9 @@
             if (!completions.length) {
                 return true;
             } else if (completions.length == 1) {
-                insert(completions[0]); return true;
+                insert(completions[0]);
+                e.preventDefault();
+                return true;
             }
 
             // Build the select widget
@@ -201,8 +224,8 @@
                     sel.selectedIndex = (--sel.selectedIndex === -1) ?
                         sel.size - 1 :
                         sel.selectedIndex;
-                // Escape
-                } else if (code === 27) {
+                // Escape & delete
+                } else if (code === 27 || code === 46) {
                     cancelEvent(event);
                     close();
                     editor.focus();
@@ -236,6 +259,7 @@
             onKeyEvent: function(i, e) {
                 // Hook into tab
                 if (e.which == 9 && !(e.ctrlKey || e.metaKey) && !e.altKey) {
+                    cancelEvent(e);
                     return complete(e);
                 }
             },

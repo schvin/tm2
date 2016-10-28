@@ -3,92 +3,127 @@
 
 <head>
   <meta charset='UTF-8'/>
-  <link href='/app/icon.png' rel='apple-touch-icon' />
-  <link href='/ext/codemirror/codemirror.css' rel='stylesheet' />
-  <link href='/ext/mapbox.css' rel='stylesheet' />
-  <link href='/ext/base/base.css' rel='stylesheet' />
-  <link href='/app/app.css' rel='stylesheet' />
-  <link href='/app/style.css' rel='stylesheet' />
-  <script src='/ext/underscore-min.js'></script>
-  <script src='/ext/codemirror/codemirror.js'></script>
-  <script src='/ext/codemirror/runmode.js'></script>
-  <script src='/ext/codemirror/searchcursor.js'></script>
-  <script src='/ext/jquery-2.0.3.min.js'></script>
-  <script src='/ext/jquery.sortable.js'></script>
-  <script src='/ext/backbone.js'></script>
-  <script src='/ext/mapbox.js'></script>
-  <script src='/app/cartoref.js'></script>
-  <script src='/app/lib.js?_=<%= +new Date %>'></script>
-  <script src='/app/style.js?_=<%= +new Date %>'></script>
-  <script src='/app/codemirror.carto.js'></script>
-  <script src='/app/codemirror.carto.complete.js'></script>
-  <script src='/app/codemirror.tm2.search.js'></script>
-  <script src='/app/codemirror.tm2.palette.js'></script>
-  <script src='/ext/sexagesimal.js'></script>
+  <link href='/app/icon.png?<%=obj.nocache%>' rel='apple-touch-icon' />
+  <link href='/ext/spectrum/spectrum.css?<%=obj.nocache%>' rel='stylesheet' />
+  <link href='/ext/codemirror/codemirror.css?<%=obj.nocache%>' rel='stylesheet' />
+  <link href='/ext/mapbox.css?<%=obj.nocache%>' rel='stylesheet' />
+  <link href='/base/base.css?<%=obj.nocache%>' rel='stylesheet' />
+  <link href='/app/app.css?<%=obj.nocache%>' rel='stylesheet' />
+  <link href='/ext/leaflet-locationfilter/locationfilter.css?<%=obj.nocache%>' rel='stylesheet' />
+  <link href='/app/style.css?<%=obj.nocache%>' rel='stylesheet' />
+  <link href='/app/print.css?<%=obj.nocache%>' rel='stylesheet' />
+  <script src='/ext/underscore-min.js?<%=obj.nocache%>'></script>
+  <script src='/ext/codemirror/codemirror.js?<%=obj.nocache%>'></script>
+  <script src='/ext/codemirror/runmode.js?<%=obj.nocache%>'></script>
+  <script src='/ext/codemirror/searchcursor.js?<%=obj.nocache%>'></script>
+  <script src='/ext/jquery-2.0.3.min.js?<%=obj.nocache%>'></script>
+  <script src='/ext/jquery.sortable.js?<%=obj.nocache%>'></script>
+  <script src='/ext/spectrum/spectrum.js?<%=obj.nocache%>'></script>
+  <script src='/ext/backbone.js?<%=obj.nocache%>'></script>
+  <script src='/ext/mapbox.js?<%=obj.nocache%>'></script>
+  <script src='/app/cartoref.js?<%=obj.nocache%>'></script>
+  <script src='/app/lib.js?<%=obj.nocache%>'></script>
+  <script src='/app/print.js?<%=obj.nocache%>'></script>
+  <script src='/app/style.js?<%=obj.nocache%>'></script>
+  <script src='/app/atom.js?<%=obj.nocache%>'></script>
+  <script src='/app/codemirror.carto.js?<%=obj.nocache%>'></script>
+  <script src='/app/codemirror.carto.complete.js?<%=obj.nocache%>'></script>
+  <script src='/app/codemirror.tm2.search.js?<%=obj.nocache%>'></script>
+  <script src='/app/codemirror.tm2.palette.js?<%=obj.nocache%>'></script>
+  <script src='/ext/sexagesimal.js?<%=obj.nocache%>'></script>
+  <script src='/ext/leaflet-locationfilter/locationfilter.js?<%=obj.nocache%>'></script>
+  <script src='/ext/sphericalmercator.js?<%=obj.nocache%>'></script>
+
+  <%= this.analytics(obj) %>
   <title><%= style.name %></title>
 </head>
 
-<body id='view' class='<%= agent %> <%= style._tmp ? 'tmp' : '' %> clip'><div id='app' class='pin-top pin-bottom'>
-
+<body id='view' class='<%= agent %> <%= style._tmp ? 'tmp' : '' %> <%= style.source.split(':')[0] === 'tmsource' ? 'local' : '' %> <%= mapboxAPI.isMapboxAPI ? 'api-mapbox' : 'api-offline' %> clip'><div id='app' class='pin-top pin-bottom mobile-cols'>
 <a id='settings'></a>
 <a id='layers'></a>
 <a id='fonts'></a>
 <a id='docs'></a>
+<a id='places'></a>
+
 <a id='user'></a>
 
 <a id='home'></a>
 <a id='xray'></a>
+<a id='export'></a>
 
-<div id='modal'>
-  <div class='modal-mask fill-darken2 animate'></div>
-  <div id='modal-content' class='limiter contain modal-content animate'></div>
-</div>
+<div id='modal-content' class='modal-content animate'></div>
 
-<div id='full' class='z1 clip animate pin-left'>
-  <div id='map' class='animate' style='background-color:<%=style.background%>;'></div>
-  <div id='map-overlay' class='overlay'></div>
+<div id='full' class='z1 clip animate pin-left dark fill-dark'>
+  <div id='map' class='animate fill-canvas' style='background-color:<%=style.background%>;'></div>
+  <div id='places' class='z10 animate pin-left fill-dark col12'>
+    <div class='pin-top z10 pad1'>
+      <a href='#' class='icon x pin-right pad1 quiet'></a>
+      <a href='#' class='js-show-search show-search-button icon search pin-topright button short quiet'></a>
+      <form id='places-search' class='row1 animate js-places-container places-search-container z10 fill-dark offcanvas-top pin-top'>
+        <input id='places-dosearch' placeholder='Search by feature, location, or OSM tag' class='small col12 clean' type='text' />
+        <a href='#' class='pin-right button quiet icon search short js-places-search'>Search</a>
+        <a href='#' class='icon js-hide-search x pin-right keyline-left pad1 quiet'></a>
+      </form>
+      <div class='pad0x pin-topleft places-toggle'>
+        <div class='rounded-toggle col12 clearfix strong center micro truncate js-places-toggle'>
+          <input id='road' type='radio' name='rtoggle' value='road' checked='checked' class='js-places'>
+          <label class='col2' for='road'>Roads</label>
+          <input id='landuse' type='radio' name='rtoggle' value='landuse' class='js-places'>
+          <label class='col2' for='landuse'>Landuse</label>
+          <input id='natural' type='radio' name='rtoggle' value='natural' class='js-places'>
+          <label class='col2' for='natural'>Natural</label>
+          <input id='park' type='radio' name='rtoggle' value='park' class='js-places'>
+          <label class='col2' for='park'>Parks</label>
+          <input id='Major cities' type='radio' name='rtoggle' value='Major cities' class='js-places'>
+          <label class='col2' for='Major cities'>Cities</label>
+          <input id='bookmarks' type='radio' name='rtoggle' value='userbookmark' class='js-places'>
+          <label class='icon heart col2' for='bookmarks'></span>Saved</label>
+        </div>
+      </div>
+    </div>
+    <div class='space-top4 col12 pin-left scroll-hide clearfix places-list unlimiter js-places-list' id='placeslist'></div>
+  </div>
+  <div id='map-overlay' class='loading overlay'></div>
   <div id='map-errors'></div>
 
-  <form id='bookmark' class='tip-bottom z10 contain fill-white round animate'>
-    <input id='addbookmark' type='text' class='col12 clean round small' value='' placeholder='Name a bookmark' autocomplete='off' />
-    <div class='pin-topright pad0'>
-      <input type='submit' class='short quiet button' value='Add' />
-    </div>
-    <ul id='bookmark-list' class='clip fill-light scroll-styled round-bottom'></ul>
-  </form>
-
-  <form id='search' class='tip-bottom z10 contain fill-white round animate'>
+  <form id='search' class='z10 contain round animate search-results'>
     <input id='dosearch' type='text' class='col12 clean small round' value='' placeholder='Search' autocomplete='off' />
-    <div class='pin-topleft pad1'>
-      <span class='icon search'></span>
-    </div>
-    <ul id='search-results' class='clip fill-light scroll-styled round-bottom'></ul>
+    <ul id='search-results' class='clip scroll-styled round-bottom'></ul>
   </form>
+  <div class='map-controls pin-top row1'>
+    <div class='pin-left z1 pad0 row1 truncate'>
+      <div class='pill inline align-top'>
+        <a href='#search' class='search-n search-button button short icon search quiet'></a><!--
+     --><a href='#' class='search-y button search-button short icon active icon search quiet'></a><!--
+     --><a id='' href='#full' title='Toggle fullscreen' class='button short icon fullscreen full-n quiet'></a><!--
+     --><a href='#' title='Exit fillscreen' class='button short icon quiet active fullscreen full-y'></a><!--
+     --><a id='zoom-in' class='button short icon plus quiet'></a><!--
+     --><a id='zoom-out' class='button short icon minus quiet'></a>
+      </div>
+      <span class='align-top inline xray-toggle'>
+        <a href='#xray' class='xray-n button short icon inspect quiet'></a>
+        <a href='#home' class='xray-y button short active icon inspect quiet'></a>
+      </span>
+      <a class='inline align-top button short icon places-button js-places-button marker quiet' title='places' href='#places'>Places</a>
 
-  <div id='map-controls' class='z10'>
-    <span class='inline xray-toggle'>
-      <a href='#xray' title='Toggle inspector' class='xray-n inline icon eye fill-white quiet'></a>
-      <a href='#home' title='Toggle inspector' class='xray-y inline icon eye fill-dark dark'></a>
-    </span>
-    <div class='fill-white inline'>
-      <a href='#search' title='Search' class='search-n keyline-right icon search quiet '></a><!--
-      --><a href='#' title='Close search' class='search-y icon keyline-right search fill-dark dark'></a><!--
-      --><a href='#bookmark' title='Bookmarks' class='bookmark-n icon marker quiet'></a><!--
-      --><a href='#' title='Close bookmarks' class='bookmark-y icon marker fill-dark dark'></a>
+      <div class='pill inline align-top export-controls'>
+        <a href='#export' title='Reselect crop area within view' id='reselect' class='quiet icon refresh button js-reselect short'>New</a><!--
+        --><a href='#export' title='Center crop area based on view' id='recenter' class='quiet icon crosshair button js-recenter short'>Center</a>
+      </div>
     </div>
-    <a href='#full' title='Toggle fullscreen' class='full-n inline fill-white icon fullscreen quiet'></a>
-    <a href='#' title='Exit fillscreen' class='full-y fill-dark dark icon fullscreen'></a>
-    <div class='inline fill-white'>
-      <a href='#' id='zoom-in' title='Zoom in' class='icon plus keyline-right quiet'></a><!--
-      --><a href='#' id='zoom-out' title='Zoom out' class='icon minus keyline-right quiet'></a>
+    <div class='pin-top text-right z0 pad0 row1'>
+      <a href='#' tooltip='Save map location' class='align-top contain strong heart micro js-add-bookmark add-bookmark rcon short inline pad0'></a>
+      <span id='map-center' class='quiet js-mapCenter inline micro strong pad0y align-top'></span>
+      <div id='zoomedto' class='align-top text-right inline contain zoom<%=style.center[2]%>'></div>
     </div>
   </div>
-  <div id='zoomedto' class='animate z<%=style.center[2]%>'></div>
+
   <!-- DEMO -->
-  <div id='inspect-popup' class='demo-popup col6 pin-bottomleft pad2 bottom2 fill-blue dark'>
+  <div id='inspect-popup' class='top2 demo-popup col7 pin-topleft pad4 fill-blue dark round-right'>
+    <a href='#' class='icon x pin-topright pad1 js-demo'></a>
     <h3>Inspecting data</h3>
     <small class='space-bottom4'>
-    TM2 styles are powered by vector tiles that contain feature data and attributes. Use the <strong class='icon eye'>inspector</strong> to see a wireframe of the raw vector data. Click the map to view details about a feature.
+    Mapbox Studio Classic styles are powered by vector tiles that contain feature data and attributes. Use the <strong class='icon inspect'>inspector</strong> to see a wireframe of the raw vector data. Click the map to view details about a feature.
     </small>
     <div class='pin-bottom clearfix center'><!--
     --><a href='#home' class='small fill-darken0 pad1 col6 icon prev quiet keyline-right'>Prev</a><!--
@@ -99,19 +134,25 @@
 
 <div id='drawers' class='animate fill-dark dark col3 offcanvas-left animate pin-left z10 clip'>
 
-  <form id='settings-drawer' class='js-settings-form drawer col12 animate offcanvas-left'>
+  <form id='settings-drawer' class='drawer col12 animate offcanvas-left'>
     <div class='pin-top pad1 keyline-bottom'>
       <h3>Settings</h3>
       <a href='#' class='icon x pin-right pad1 quiet'></a>
     </div>
     <div class='pin-left top1 scroll-styled'>
-      <fieldset class='keyline-bottom clearfix pad2y pad1x contain'>
-        <div class='z10 pin-top pin-bottom col12 pad1x pad2y fill-disable on-tmp'></div>
-        <section class='space-bottom1'>
+      <fieldset class='keyline-bottom clearfix pad1y contain'>
+        <div class='z10 pin-top pin-bottom col12 pad1x pad2y fill-disable on-local on-tmp on-changed'></div>
+        <div class='on-tmp on-changed z10 pad0y pad1x micro center truncate pin-top fill-dark keyline-top'>
+          <strong class='icon floppy'>Save project</strong> to share
+        </div>
+        <div class='on-local z10 pad0y pad1x micro center truncate pin-top fill-dark keyline-top'>
+          Use <strong class='icon cloud'>remote source</strong> to share
+        </div>
+        <section class='pad1 contain on-api-mapbox'>
           <div id='mapstatus' class='contain clip'>
             <div id='mapstatus-mapid' class='pin-top pad0y pad1x center truncate round-top space small animate fill-darken1'>
               <strong>Map ID</strong>
-              <a href='https://www.mapbox.com/data/' class='quiet js-mapid' target='_blank'><%= _(style._prefs.mapid).escape() || 'Style not uploaded' %></a>
+              <a href='https://www.mapbox.com/styles/' class='quiet js-mapid' target='_blank'><%= _(style._prefs.mapid).escape() || 'Style not uploaded' %></a>
             </div>
             <div id='mapstatus-uploaded' class='pin-top pad0y pad1x center truncate round-top space small animate fill-green icon check'>
               Upload complete
@@ -119,11 +160,11 @@
           </div>
           <a href='#settings' class='js-upload col12 short button round-bottom icon up'>Upload to Mapbox</a>
         </section>
-        <section class='space-bottom1'>
-          <a href='/print?id=<%=style.id%>' id='print-style' class='col12 short button picture icon'>Export image</a>
+        <section class='small center on-api-mapbox'>
+          <a href='/style.tm2z?id=<%= style.id %>' class='icon package'>or download package</a>
         </section>
-        <section>
-          <a href='/style.tm2z?id=<%=style.id%>' class='col12 short button icon package'>Download package</a>
+        <section class='pad1 contain on-api-offline'>
+          <a href='/style.tm2z?id=<%= style.id %>' class='col12 short button icon package'>Download package</a>
         </section>
       </fieldset>
       <fieldset class='pad1x'>
@@ -140,11 +181,17 @@
           <input class='short small stretch' name='attribution' type='text' value='<%= _(style.attribution).escape() %>'></input>
         </section>
       </fieldset>
-      <div class='pad1x'>
-        <fieldset class='pad1 space-bottom2 keyline-all round'>
+      <div class='pad1x pad2y keyline-top'>
           <section class='space-bottom1 clearfix'>
-            <label class='inline col4'>Image format</label>
-            <select name='format'>
+            <label class='micro inline col4'>Center</label>
+            <div class='micro fill-darken1 pad0x clip col8 contain round'>
+              <span class='js-savedCenter'><%= style.center[0].toFixed(4) %>,<%= style.center[1].toFixed(4) %>,<%= style.center[2] %></span>
+              <a href='#settings' class='js-lockCenter icon lock pin-right round-right fill-darken2-onactive <%= !style._prefs.saveCenter ? 'active' : '' %>'></a>
+            </div>
+          </section>
+          <section class='space-bottom1 clearfix'>
+            <label class='micro inline col4'>Format</label>
+            <select class='col8' name='format'>
               <% _({
                 'png24': 'png (24-bit)',
                 'png8:m=h': 'png (256 colors)',
@@ -162,16 +209,19 @@
             </select>
           </section>
           <section class='space-bottom0 clearfix'>
-            <label class='inline col4'>Minzoom</label>
-            <input id='minzoom' name='minzoom' class='min' type='range' value='<%= style.minzoom %>' min='0' max='22' step='1' onchange='rangeHandler(this, "max", "#maxzoom");' />
-            <span class='small quiet code inline range' id='minzoom-val'><%= style.minzoom %></span>
+            <label class='micro inline col4'>Minzoom</label>
+            <div class='col8'>
+              <input id='minzoom' name='minzoom' class='min zoomrange' type='range' value='<%= style.minzoom %>' min='0' max='22' step='1' oninput='rangeHandler(this, "max", "#maxzoom");' />
+              <span class='micro quiet inline range' id='minzoom-val'><%= style.minzoom %></span>
+            </div>
           </section>
           <section class='space-bottom0 clearfix'>
-            <label class='inline col4'>Maxzoom</label>
-            <input id='maxzoom' name='maxzoom' class='max' type='range' value='<%= style.maxzoom %>' min='0' max='22' step='1' onchange='rangeHandler(this, "min", "#minzoom");' />
-            <span class='small quiet code inline range' id='maxzoom-val'><%= style.maxzoom %></span>
+            <label class='micro inline col4'>Maxzoom</label>
+            <div class='col8'>
+              <input id='maxzoom' name='maxzoom' class='max zoomrange' type='range' value='<%= style.maxzoom %>' min='0' max='22' step='1' oninput='rangeHandler(this, "min", "#minzoom");' />
+              <span class='micro quiet inline range' id='maxzoom-val'><%= style.maxzoom %></span>
+            </div>
           </section>
-        </fieldset>
       </div>
     </div>
   </form>
@@ -182,24 +232,44 @@
       <a href='#' class='icon x pin-right pad1 quiet'></a>
     </div>
     <div class='pin-left top1 scroll-styled col12'>
-      <div class='pad2y pad1x'><a href='#' class='js-modalsources col12 button short icon point-line'>Change source</a></div>
-      <div id='sources' class='js-layer-content'>
-        <%= _(sources).map(_(this.sourcelayers).bind(this)).join('\n') %>
+      <div class='pad2y pad1x contain'>
+        <a href='#' class='js-modalsources col12 button short icon polygon'>Change source</a>
+        <% if (style.layers) { %>
+          <div class='pin-top pin-bottom fill-disable'>
+            <div class='z10 pad0y pad1x micro center pin-top fill-dark keyline-top'>
+              <span class='icon lock'></span><strong>Source locked</strong> (custom layer order)
+            </div>
+          </div>
+        <% } %>
+      </div>
+      <div id='sources' class='keyline-top js-layer-content'>
+        <%
+          var sourcelayers = this.sourcelayers({
+            id: sources[0].id,
+            name: sources[0].name,
+            vector_layers: sources[0].vector_layers,
+            xraycolor:this.xraycolor,
+            userlayers:style.layers
+          });
+        %>
+        <%= sourcelayers %>
       </div>
     </div>
 
   </div>
 
   <div id='fonts-drawer' class='drawer col12 animate offcanvas-left'>
-    <div class='pin-top keyline-botom pad1 keyline-bottom'>
+    <div class='pin-top pad1 keyline-bottom'>
       <h3>Fonts</h3>
       <a href='#' class='icon x pin-right pad1 quiet'></a>
     </div>
     <div id='fontfamily' class='pin-left col12 top1 scroll-styled'>
-    <%= this['stylefonts'](fontsRef) %>
+      <div class='js-userfonts'><%= this['userfonts']({fonts:style.fonts,id:style.id}) %></div>
+      <%= this['stylefonts'](fontsRef) %>
     </div>
   </div>
 
+<!-- when it opens and fills the drawer -->
   <div id='docs-drawer' class='drawer col12 animate offcanvas-left'>
     <div class='pin-top keyline-botom pad1 keyline-bottom'>
       <h3>Documentation</h3>
@@ -211,30 +281,63 @@
   </div>
 
   <div id='user-drawer' class='drawer col12 animate offcanvas-left'>
-    <div class='pin-top keyline-botom pad1 keyline-bottom'>
-      <h3>Projects</h3>
+    <div class='pin-top pad1 keyline-bottom'>
+      <h3>Styles & Sources</h3>
       <a href='#' class='icon x pin-right pad1 quiet'></a>
     </div>
     <%= this.history(obj) %>
   </div>
 
+  <div class='drawer col12 animate offcanvas-left'>
+
+  </div>
 </div>
 
-<div id='style-ui' class='animate z1 col6 pin-right fill-light'>
-  <div id='code' class='pin-left col12'>
-    <div class='row1 fill-white pin-top'>
+<div id='style-ui' class='animate z1 col6 pin-right'>
+
+  <div id='code' class='animate pin-right fill-light col12'>
+    <div class='row1 fill-gray pin-top'>
       <nav id='tabs' class='keyline-bottom carto-tabs row1 contain small'><!--
         <% _(style.styles).keys().forEach(function(k,i) { %>
-        --><a rel='<%=k%>' href='#code-<%=k.replace(/[^\w+]/g,'_')%>' class='keyline-right strong quiet tab js-tab pad0 truncate <%=!i?'active':''%>'><%=k.replace(/.mss/,'')%> <span class='icon trash js-deltab pin-topright pad1y pad0x'></span></a><!--
+        --><a rel='<%=k%>' href='#code-<%=k.replace(/[^\w+]/g,'_')%>' class='keyline-right strong quiet tab js-tab pad0 truncate <%=!i?'active':''%>'><%=k.replace(/.mss/,'')%> <span class='js-deltab deltab quiet pin-topright pad1y keyline-left'><span class='icon minus inline'></span></a><!--
         <% }); %>
       --></nav>
-      <a href='#' class='js-addtab addtab quiet icon plus pad1y pad0x z1 pin-bottomright'></a>
+      <div class='pin-right row1 z1'>
+        <a href='#' class='inline js-addtab quiet icon plus pad1'></a><!--
+     --><a href='#export' class='inline js-export export-n icon picture keyline-left quiet pad1'></a>
+      </div>
+    </div>
+    <div class='CodeMirror-dialog offcanvas-top animate fill-white keyline-bottom pin-top z100'>
+      <div class='fill-white z10'>
+        <fieldset class='keyline-left contain'>
+          <input type='text' placeholder='Search stylesheet' value='' class='search-input small js-search-input clean stretch'>
+          <div class='pin-topright pad0y pill search-buttons js-search-buttons'>
+            <a href='#' class='js-cm-reset-button button short icon small quiet alert reset-button hidden'>No results</a><!--
+            --><a href='#' class='js-cm-search-button button short icon small quiet search'>Find</a>
+          </div>
+        </fieldset>
+      </div>
+      <div id="search-info" class="clearfix keyline-top small fill-white search-info hidden">
+        <div class="pad1 col6">
+          <div class="code"><kbd class="prefixed">F</kbd> Find</div>
+          <div class="code"><kbd class="prefixed">G</kbd> Next result</div>
+        </div>
+        <div class="pad1 col6">
+          <div class="quiet">use /re/ syntax for regex search.</div>
+          <div class="code"><kbd class="prefixed">Shift+G</kbd> Previous result</div>
+        </div>
+      </div>
+      <a href='#search-info' class='js-cm-dialog-info pin-topleft pad1 inline icon info quiet dialog-n'></a>
+      <a href='#' class='js-cm-dialog-info pin-topleft pad1 inline icon info quiet active dialog-y'></a>
+      <a href='#' id='js-cm-dialog-close' class='js-cm-dialog-close pin-right pad1 inline icon x quiet'></a>
+
     </div>
     <div id='stylesheets'></div>
   </div>
 
   <!-- DEMO -->
-  <div id='style-popup' class='demo-popup col6 pin-topleft pad2 top2 fill-blue dark offcanvas-left'>
+  <div id='style-popup' class='demo-popup col7 pin-topleft pad4 top2 fill-blue dark offcanvas-left round-left'>
+    <a href='#' class='icon x pin-topright pad1 js-demo'></a>
     <h3>Editing + saving</h3>
     <small class='space-bottom4'>
     Change the Map <code>background-color</code> property to a hex code (<code>#f88</code>) or html color (<code>pink</code>). Hit <kbd class='prefixed'>s</kbd> to save and update your style. The map preview on the left updates as you work.
@@ -247,11 +350,123 @@
   <!-- END DEMO -->
 </div>
 
+<div id='export-ui' class='z100 col6 animate pin-right dark fill-dark'>
+  <nav class='row1 col12 pin-top keyline-bottom z1'>
+    <a href='#' class='js-export export-y icon x fill-dark dark pad1 z1 pin-bottomright'></a>
+    <h3 class='inline pad1'>Export image</h3>
+    <a href='#export-info' class='pin-right pad1 js-info keyline-right inline icon info quiet'></a>
+    <div id='export-info' class='clearfix pin-top top1 z10 pad1 prose keyline-bottom fill-dark hidden'>
+      <p>Select an area to export as a static image by manipulating the bounding box, or the coordinates below. The final image will be at the same zoom level as the viewport.</p>
+    </div>
+  </nav>
+
+  <form class='js-data-content menu-content pin-right col12 top1 scroll-styled pad1x pad2y'>
+    <div class='clearfix'>
+      <h3 class='space-bottom2 col8'>Zoom <span id='zoom'><%=style.center[2]%></span></h3>
+      <div class='checkbox-pill col4'>
+        <input type='checkbox' id='lock'>
+        <label for='lock' class='fr button short quiet icon check'>Lock dimensions</label>
+      </div>
+    </div>
+    <fieldset class='space-bottom1'>
+      <label>Crop size</label>
+      <div class='space-bottom1 clearfix col12'>
+        <div class='col6 col-input with-icon'>
+          <input id='pixelX' class='js-dimensions col12 short small dim' type='text' value='' />
+          <span class='icon quiet l-r-arrow'></span>
+          <label class='micro ghost'>Pixels</label>
+        </div>
+        <div class='col6 col-input with-icon'>
+          <input id='pixelY' class='js-dimensions col12 dim short small' type='text' value='' />
+          <span class='icon quiet u-d-arrow'></span>
+          <label class='micro ghost'>Pixels</label>
+        </div>
+      </div>
+      <div class='clearfix col12'>
+        <div class='col6 col-input with-icon'>
+          <input id='inchX' class='js-dimensions col12 short small dim' type='text' value='' />
+          <span class='icon quiet l-r-arrow'></span>
+          <label class='micro ghost'>Inches</label>
+        </div>
+        <div class='col6 col-input with-icon'>
+          <input id='inchY' class='js-dimensions col12 dim short small' type='text' value='' />
+          <span class='icon quiet u-d-arrow'></span>
+          <label class='micro ghost'>Inches</label>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <div class='space-bottom1 clearfix'>
+        <label>Crop bounds</label>
+          <!-- [W, S, E, N] -->
+        <div class='col3 col-input contain'>
+          <input id='bboxInputW' class='js-coordinates stretch short small' type='text' value='' />
+          <label class='micro ghost'>W</label>
+        </div>
+        <div class='col3 col-input contain'>
+          <input id='bboxInputS' class='js-coordinates stretch short small' type='text' value='' />
+          <label class='micro ghost'>S</label>
+        </div>
+        <div class='col3 col-input contain'>
+          <input id='bboxInputE' class='js-coordinates stretch short small' type='text' value='' />
+          <label class='micro ghost'>E</label>
+        </div>
+        <div class='col3 col-input contain'>
+          <input id='bboxInputN' class='js-coordinates stretch short small' type='text' value='' />
+          <label class='micro ghost'>N</label>
+        </div>
+      </div>
+      <div class='space-bottom1'>
+        <label>Center point</label>
+        <div class='col6 col-input contain'>
+          <input id='centerInputLat' class='js-coordinates col12 short small' type='text' value='' />
+          <label class='micro ghost'>Lat</label>
+        </div>
+        <div class='col6 col-input contain'>
+          <input id='centerInputLng' class='js-coordinates col12 short small' type='text' value='' />
+          <label class='micro ghost'>Lng</label>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class='pad1 keyline-all round clearfix'>
+      <div class='space-bottom1'>
+        <label>Image format</label>
+        <div id='format' class='fill-dark clearfix center inline rounded-toggle short'>
+          <input id='png' type='radio' name='format' value='png' checked='checked'>
+          <label for='png'>png</label>
+          <input id='jpeg' type='radio' name='format' value='jpeg'>
+          <label for='jpeg'>jpeg</label>
+        </div>
+      </div>
+      <div>
+        <label>Resolution</label>
+        <div id='resolution' class='clearfix inline rounded-toggle short'>
+        <% _({
+          '2.078125': '150ppi',
+          '4.15625': '300ppi',
+          '8.3125': '600ppi'
+        }).each(function(label, format) { %>
+        <input value='<%= format %>' id='<%= label %>' type='radio' name='resolution' <% if (label === '300ppi') { %> checked='true' <% } %>>
+        <label for='<%= label %>'><%= label %></label>
+        <% }); %>
+        </div>
+     </div>
+    </fieldset>
+
+  </form>
+
+  <div class='fill-dark pin-bottom keyline-top pad1'>
+    <a id='exportDownload' href='#' type='button' class='round short col12 button disabled icon floppy' value='Download image' name='Export' >Download</a>
+  </div>
+</div>
+
 <div id='toolbar' class='center pad1 dark z10'>
   <% if (style._tmp) { %>
-  <a class='toolbar-button strong icon save js-saveas floppy' href='#'>Save as</a>
+  <a class='toolbar-button strong icon saveas js-saveas floppy' href='#'>Save as</a>
   <% } else { %>
-  <a class='toolbar-button strong icon save js-save floppy' href='#'>Save</a>
+  <a class='toolbar-button strong icon save js-save floppy' href='#'><span class='saved-y'>Save</span><span class='saved-n'>Saved</span></a>
   <% } %>
   <a class='toolbar-button strong icon settings-n sprocket' href='#settings'>Settings</a>
   <a class='toolbar-button strong icon settings-y sprocket active fill-lighten1' href='#'>Settings</a>
@@ -263,23 +478,25 @@
   <a class='toolbar-button strong icon docs-y info active fill-lighten1' href='#'>Docs</a>
 
   <div class='user-icon pad1 pin-bottom'>
-    <a class='toolbar-button strong user-n' href='#user'><div class='icon inline avatar dot' style='background-image:url(<%= user.avatar %>)' /></div>Projects</a>
-    <a class='toolbar-button strong user-y active fill-lighten1' href='#'><div class='inline icon avatar dot' style='background-image:url(<%= user.avatar %>)' /></div>Projects</a>
+    <a class='toolbar-button strong user-n' href='#user'><div class='icon inline avatar dot' style='background-image:url(<%= user.avatar %>)' /></div>Styles & Sources</a>
+    <a class='toolbar-button strong user-y active fill-lighten1' href='#'><div class='inline icon avatar dot' style='background-image:url(<%= user.avatar %>)' /></div>Styles & Sources</a>
   </div>
 </div>
 
 <!-- DEMO POPUPS -->
-<div id='style-popup' class='demo-popup demo-fallback animate margin4 col4 pad2 pin-bottom bottom2 fill-blue dark z1'>
+<div id='style-popup' class='demo-popup demo-fallback animate margin3 col6 pad4 pin-bottom bottom2 fill-blue dark z1 round'>
+  <a href='#' class='icon x pin-topright pad1 js-demo'></a>
   <h3>Style editor</h3>
   <small class='space-bottom4'>
-  In the TM2 style editor you can design map styles using data from OpenStreetMap, Mapbox, and other custom sources. Then publish them to be used with the Mapbox API.
+  In the Mapbox Studio Classic style editor you can design map styles using data from OpenStreetMap, Mapbox, and other custom sources. Then publish them to be used with the Mapbox API.
   </small>
   <div class='pin-bottom clearfix center'><!--
   --><a href='#home' class='small fill-darken0 pad1 col12 icon next quiet'>Next</a>
   </div>
 </div>
 
-<div id='settings-popup' class='demo-popup col4 margin3 pin-topleft pad2 fill-blue dark'>
+<div id='settings-popup' class='demo-popup col5 margin3 pin-topleft pad4 top1 fill-blue dark round-right'>
+  <a href='#' class='icon x pin-topright pad1 js-demo'></a>
   <h3>Publishing</h3>
   <small class='space-bottom4'>
   Styles can be packaged as <code>.tm2z</code> files that include your style and any image resources in your style folder. Click the <strong class='icon package'>Package</strong> button or <strong class='icon up'>Upload</strong> directly to your Mapbox account.
@@ -290,7 +507,8 @@
   </div>
 </div>
 
-<div id='layers-popup' class='demo-popup col4 margin3 pin-topleft pad2 top1 fill-blue dark'>
+<div id='layers-popup' class='demo-popup col5 margin3 pin-topleft pad4 top1 fill-blue dark round-right'>
+  <a href='#' class='icon x pin-topright pad1 js-demo'></a>
   <h3>Vector sources</h3>
   <small class='space-bottom4'>
   Each style is powered by a vector source. Click a layer to see more about the data that can be styled. Use the <strong class='icon point-line'>Change source</strong> button to switch out the active vector source for another.
@@ -301,10 +519,11 @@
   </div>
 </div>
 
-<div id='fonts-popup' class='demo-popup col4 margin3 pin-topleft pad2 top2 fill-blue dark'>
+<div id='fonts-popup' class='demo-popup col5 margin3 pin-topleft pad4 top2 fill-blue dark round-right'>
+  <a href='#' class='icon x pin-topright pad1 js-demo'></a>
   <h3>Fonts</h3>
   <small class='space-bottom4'>
-  The fonts drawer displays previews of fonts that TM2 can use. Use the correct combination of font family and weight in your CartoCSS to the font used by text labels.
+  The fonts drawer displays previews of fonts that Mapbox Studio Classic can use. Use the correct combination of font family and weight in your CartoCSS to the font used by text labels.
   </small>
   <div class='pin-bottom clearfix center'><!--
   --><a href='#docs' class='small fill-darken0 pad1 col6 icon prev quiet keyline-right'>Prev</a><!--
@@ -312,7 +531,8 @@
   </div>
 </div>
 
-<div id='docs-popup' class='demo-popup hidden col4 margin3 pin-bottomleft pad2 bottom2 fill-blue dark'>
+<div id='docs-popup' class='demo-popup hidden col5 margin3 pin-bottomleft pad4 bottom2 fill-blue dark round-right'>
+  <a href='#' class='icon x pin-topright pad1 js-demo'></a>
   <h3>CartoCSS</h3>
   <small class='space-bottom4'>
   View a full reference to the map styling language CartoCSS in a drawer next to your code as you work. Click any of the properties to see a description of what it does and its default values.
@@ -323,45 +543,54 @@
   </div>
 </div>
 
-<div id='user-popup' class='demo-popup col4 margin3 pin-bottomleft pad2 bottom1 fill-blue dark'>
+<div id='user-popup' class='demo-popup col5 margin3 pin-bottomleft pad4 bottom1 fill-blue dark round-right'>
+  <a href='#' class='icon x pin-topright pad1 js-demo'></a>
   <h3>Switching projects</h3>
   <small class='space-bottom4'>
   Click your avatar to see styles you've edited recently or start a new style. Switch to the <strong>Sources</strong> pane to create or edit vector sources from your custom data.
   </small>
   <div class='pin-bottom clearfix center'><!--
   --><a href='#settings' class='small fill-darken0 pad1 col6 icon prev quiet keyline-right'>Prev</a><!--
-  --><a href='#start' class='small fill-darken0 pad1 col6 icon check quiet'>Done</a>
+  --><a href='#' class='small fill-darken0 pad1 col6 icon check quiet js-demo'>Done</a>
   </div>
 </div>
 <!-- END DEMO POPUPS -->
 
-<%= this.styledemo() %>
-
 </div>
 
 <script>
-var cwd = <%= JSON.stringify(cwd) %>;
-var style = <%= JSON.stringify(style) %>;
+var gazetteer = <%= saferstringify(gazetteer, null, 2) %>;
+var cwd = <%= saferstringify(cwd, null, 2) %>;
+var style = <%= saferstringify(style, null, 2) %>;
+var examples = <%= saferstringify(examples, null, 2) %>;
 var templates = {};
+var mapboxAPI = <%= saferstringify(mapboxAPI, null, 2) %>;
+var oauth = <%= saferstringify(oauth, null, 2) %>;
+
+templates.emptystate = <%= this.emptystate.source %>;
 templates.modalbrowser = <%= this.modalbrowser.source %>;
 templates.modalbrowsersave = <%= this.modalbrowsersave.source %>;
 templates.modalbrowseropen = <%= this.modalbrowseropen.source %>;
 templates.modaladdtab = <%= this.modaladdtab.source %>;
-templates.modalmessage = <%= this.modalmessage.source %>;
+templates.modalconfirm = <%= this.modalconfirm.source %>;
 templates.modalsources = <%= this.modalsources.source %>;
 templates.modalerror = <%= this.modalerror.source %>;
 templates.modalupgrade = <%= this.modalupgrade.source %>;
+templates.modalnewproject = <%= this.modalnewproject.source %>;
+templates.newproject = <%= this.newproject.source %>;
 templates.sourceitem = <%= this.sourceitem.source %>;
 templates.sourcelayers = <%= this.sourcelayers.source %>;
+templates.userfonts = <%= this.userfonts.source %>;
 templates.xraycolor = <%= this.xraycolor.source %>;
 templates.xraypopup = <%= this.xraypopup.source %>;
-Style(templates, cwd, style);
+
+Style(templates, cwd, style, examples, gazetteer, mapboxAPI, oauth);
 </script>
 
 <% if (test) { %>
-  <script>window.testParams = <%= JSON.stringify(test) %>;</script>
-  <script src='/app/test/tape.js'></script>
-  <script src='/app/test/app.test.style.js'></script>
+  <script>window.testParams = <%= saferstringify(test, null, 0) %>;</script>
+  <script src='/app/test/tape.js?<%=obj.nocache%>'></script>
+  <script src='/app/test/app.test.style.js?<%=obj.nocache%>'></script>
 <% } %>
 
 </body>

@@ -4,9 +4,10 @@
 // - cwd, absolute path from which to begin browsing
 %>
 <% print(this.modalbrowser({
+  title: 'Save as',
   id: 'saveas',
   cwd: cwd,
   hint: 'Letters and numbers only',
   placeholder: type + ' name',
-  pattern: '[\\w+\\d+\\.\\s\\/_-]+'
+  pattern: '[\\w\\d\\.\\s\\/_-]+'
 })); %>

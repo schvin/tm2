@@ -7,23 +7,26 @@ var url = require('url');
 var assert = require('assert');
 var tm = require('../lib/tm');
 var style = require('../lib/style');
-var defpath = path.dirname(require.resolve('tm2-default-style'));
+var defpath = tm.join(path.dirname(require.resolve('mapbox-studio-default-style')));
 var mockOauth = require('../lib/mapbox-mock')(require('express')());
 var Vector = require('tilelive-vector');
+var tilelive = require('tilelive');
 var testutil = require('./util');
 var UPDATE = !!process.env.UPDATE;
-var tmp = require('os').tmpdir();
+var tmp = tm.join(require('os').tmpdir(), 'mapbox-studio');
 var creds = {
     account: 'test',
     accesstoken: 'testaccesstoken'
 };
 
 var server;
-var localstyle = 'tmstyle://' + path.join(__dirname, 'fixtures-localstyle');
-var tmppath = path.join(tmp, 'tm2-styleTest-' + (+new Date));
+var localstyle = 'tmstyle://' + tm.join(__dirname, 'fixtures-local style');
+var fontstyle = 'tmstyle://' + tm.join(__dirname, 'fixtures-font style');
+var tmppath = tm.join(tmp, 'Style ШЖФ -' + (+new Date));
 
-test('setup: config', function(t) {
+test('setup: config ' + __filename, function(t) {
     tm.config({
+        log: false,
         db: path.join(tmppath, 'app.db'),
         fonts: path.join(tmppath, 'fonts'),
         cache: path.join(tmppath, 'cache')
@@ -32,7 +35,8 @@ test('setup: config', function(t) {
 
 test('setup: mockserver', function(t) {
     tm.db.set('oauth', creds);
-    tm._config.mapboxtile = 'http://localhost:3001/v4';
+    tm.db.set('MapboxAPIAuth', 'http://localhost:3001');
+    tm.db.set('MapboxAPITile', 'http://localhost:3001');
     server = mockOauth.listen(3001, t.end);
 });
 
@@ -45,11 +49,22 @@ test('loads default style from disk', function(t) {
     });
 });
 
-test('saves style in memory', function(t) {
+test('loads local style via tilelive', function(assert) {
+    style.clear(localstyle);
+    assert.equal(style.cache[localstyle] === undefined, true, 'uncached');
+    tilelive.load(localstyle, function(err, proj) {
+        assert.ifError(err);
+        assert.equal(proj.data.id, localstyle);
+        assert.deepEqual(style.cache[localstyle] === proj, true, 'cached');
+        assert.end();
+    });
+});
+
+test('refresh style in memory', function(t) {
     testutil.createTmpProject('style-save', localstyle, function(err, tmpid, data) {
     t.ifError(err);
 
-    style.save(_({id:style.tmpid()}).defaults(data), function(err, source) {
+    style.refresh(_({id:style.tmpid()}).defaults(data), function(err, source) {
         t.ifError(err);
         t.ok(source);
         t.end();
@@ -58,11 +73,31 @@ test('saves style in memory', function(t) {
     });
 });
 
-test('saves style (invalid)', function(t) {
+test('refresh style (invalid)', function(t) {
     testutil.createTmpProject('style-save', localstyle, function(err, tmpid, data) {
         t.ifError(err);
-        style.save(_({id:style.tmpid(),minzoom:-1}).defaults(data), function(err, source) {
-            assert.equal(err.toString(), 'Error: minzoom must be an integer between 0 and 22', 'style.save() errors on invalid style');
+        style.refresh(_({id:style.tmpid(),minzoom:-1}).defaults(data), function(err, source) {
+            t.equal(err.toString(), 'Error: minzoom must be an integer between 0 and 22', 'style.refresh() errors on invalid style');
+            t.end();
+        });
+    });
+});
+
+test('refresh style (invalid bookmarks)', function(t) {
+    testutil.createTmpProject('style-save', localstyle, function(err, tmpid, data) {
+        t.ifError(err);
+        style.refresh(_({id:style.tmpid(),_bookmarks:'asdf'}).defaults(data), function(err, source) {
+            t.equal(err.toString(), 'Error: bookmarks must be an array', 'style.refresh() errors on invalid style');
+            t.end();
+        });
+    });
+});
+
+test('save temporary', function(t) {
+    testutil.createTmpProject('style-save', localstyle, function(err, tmpid, data) {
+        t.ifError(err);
+        style.save(_({id:style.tmpid()}).defaults(data), function(err) {
+            t.equal(/^Error: Cannot save temporary style/.test(err.toString()), true, 'style.save() errors on temporary style');
             t.end();
         });
     });
@@ -101,15 +136,86 @@ test('saves style to disk', function(t) {
         t.equal(fs.readFileSync(output['a.mss'],'utf8'), fs.readFileSync(expect['style-save-a.mss'],'utf8'));
         t.equal(fs.readFileSync(output['b.mss'],'utf8'), fs.readFileSync(expect['style-save-b.mss'],'utf8'));
 
+        t.end();
+
+        // @TODO commented out as this would require true access to the mapbox API.
         // This setTimeout is here because thumbnail generation on save
         // is an optimistic operation (e.g. callback does not wait for it
         // to complete).
-        setTimeout(function() {
-            t.ok(fs.existsSync(path.join(tmpdir,'.thumb.png')), 'saves thumb');
-            t.end();
-        }, 500);
+        // setTimeout(function() {
+        //     t.ok(fs.existsSync(path.join(tmpdir,'.thumb.png')), 'saves thumb');
+        //     t.end();
+        // }, 500);
     });
 
+    });
+});
+
+test('save to disk with fonts ', function(t) {
+    // Uses an example style with assets to test pre-save dir copy.
+    style.info(fontstyle, function(err, data) {
+        t.ifError(err);
+        var tmpid = fontstyle;
+        var permid = path.join(tmp, 'style-saveas-' + Math.random().toString(36).split('.').pop());
+        style.save(_({_tmp:tmpid, id:permid}).defaults(data), function(err, source) {
+
+            t.ifError(err);
+            t.ok(source);
+            t.equal(source.data._tmp, false);
+            var tmpdir = tm.parse(permid).dirname;
+            t.deepEqual(source.data.fonts, ['Comic Neue Angular Bold Oblique', 'Comic Neue Oblique'], ' returns correct fonts');
+
+            // Remove one of the fonts
+            fs.unlink(tm.join(tmpdir,'ComicNeue-Regular-Oblique.ttf'), function(err) {
+                t.ifError(err);
+                style.refresh(_({_tmp:tmpid, id:permid}).defaults(data), function(err, source) {
+                    t.ifError(err);
+                    t.deepEqual(source.data.fonts, ['Comic Neue Angular Bold Oblique'], ' returns correct fonts');
+                    t.end();
+                });
+            });
+        });
+    });
+});
+
+test('save as tmp => perm', function(t) {
+    // Uses an example style with assets to test pre-save dir copy.
+    style.info(style.examples['mapbox-studio-comic'], function(err, data) {
+        t.ifError(err);
+        var tmpid = style.examples['mapbox-studio-comic'];
+        var permid = path.join(tmp, 'style-saveas-' + Math.random().toString(36).split('.').pop());
+        style.save(_({_tmp:tmpid, id:permid}).defaults(data), function(err, source) {
+            t.ifError(err);
+            t.ok(source);
+            t.equal(source.data._tmp, false);
+            var tmpdir = tm.parse(permid).dirname;
+            t.ok(fs.existsSync(tm.join(tmpdir,'img')));
+            t.ok(fs.existsSync(tm.join(tmpdir,'project.yml')));
+            t.ok(fs.existsSync(tm.join(tmpdir,'project.xml')));
+            t.ok(!fs.existsSync(tm.join(tmpdir,'_gfx')));
+            t.end();
+        });
+    });
+});
+
+test('save as tmp => perm', function(t) {
+    // Uses an example style with assets to test pre-save dir copy.
+
+    style.info(style.examples['mapbox-studio-comic'], function(err, data) {
+        t.ifError(err);
+        var tmpid = style.examples['mapbox-studio-comic'];
+        var permid = path.join(tmp, 'style-saveas-' + Math.random().toString(36).split('.').pop());
+        style.save(_({_tmp:tmpid, id:permid}).defaults(data), function(err, source) {
+            t.ifError(err);
+            t.ok(source);
+            t.equal(source.data._tmp, false);
+            var tmpdir = tm.parse(permid).dirname;
+            t.ok(fs.existsSync(tm.join(tmpdir,'img')));
+            t.ok(fs.existsSync(tm.join(tmpdir,'project.yml')));
+            t.ok(fs.existsSync(tm.join(tmpdir,'project.xml')));
+            t.ok(!fs.existsSync(tm.join(tmpdir,'_gfx')));
+            t.end();
+        });
     });
 });
 
@@ -164,11 +270,14 @@ test('style.info: fails on bad path', function(t) {
 });
 
 test('style.info: reads style YML', function(t) {
-    style.info('tmstyle://' + defpath, function(err, info) {
+    var tmpid = 'tmstyle://' + defpath;
+    style.info(tmpid, function(err, info) {
         t.ifError(err);
-        t.equal(info.id, 'tmstyle://' + defpath, 'style.info adds id key');
+        t.equal(info.id, tmpid, 'style.info adds id key');
+        t.equal(info._tmp, false, 'style info adds _tmp=false');
 
-        info.id = '[id]';
+        var basepath = tm.parse(tmpid).dirname;
+        info.id = info.id.replace(basepath, '[BASEPATH]');
 
         var filepath = path.join(__dirname,'expected','style-info-default.json');
         if (UPDATE) {
@@ -179,16 +288,62 @@ test('style.info: reads style YML', function(t) {
     });
 });
 
+test('style.info: reads style YML (tmp)', function(t) {
+    var tmpid = 'tmpstyle://' + defpath;
+    style.info(tmpid, function(err, info) {
+        t.ifError(err);
+        t.equal(info.id, tmpid, 'style.info adds id key');
+        t.equal(info._tmp, tmpid, 'style info adds _tmp=id');
+
+        var basepath = tm.parse(tmpid).dirname;
+        info.id = info.id.replace(basepath, '[BASEPATH]');
+        info._tmp = info._tmp.replace(basepath, '[BASEPATH]');
+
+        var filepath = path.join(__dirname,'expected','style-info-default-tmp.json');
+        if (UPDATE) {
+            fs.writeFileSync(filepath, JSON.stringify(info, null, 2));
+        }
+        t.deepEqual(info, require(filepath));
+        t.end();
+    });
+});
+
+test('style.info: reads style YML (bookmarks)', function(t) {
+    style.info(localstyle, function(err, info) {
+        t.ifError(err);
+        t.equal(info.id, localstyle, 'style.info adds id key');
+        t.equal(info._tmp, false, 'style info adds _tmp=false');
+
+        var basepath = tm.parse(localstyle).dirname;
+        info.id = info.id.replace(basepath, '[BASEPATH]');
+
+        var filepath = path.join(__dirname,'expected','style-info-bookmarks.json');
+        if (UPDATE) {
+            fs.writeFileSync(filepath, JSON.stringify(info, null, 2));
+        }
+        t.deepEqual(info, require(filepath));
+        t.end();
+    });
+});
+
 test('style.info: invalid yaml (non-object)', function(t) {
-    style.info('tmstyle://' + path.join(__dirname,'fixtures-invalid-nonobj'), function(err, source) {
+    style.info('tmstyle://' + path.join(__dirname,'fixtures-invalid nonobj'), function(err, source) {
         t.ok(err);
         t.ok(/^Error: Invalid YAML/.test(err.toString()));
         t.end();
     });
 });
 
+test('style.info: invalid bookmarks', function(t) {
+    style.info('tmstyle://' + path.join(__dirname,'fixtures-invalid badbookmarks'), function(err, source) {
+        t.ok(err);
+        t.ok(/^JS-YAML: end of the stream or a document separator is expected/.test(err.toString()));
+        t.end();
+    });
+});
+
 test('style.info: invalid yaml', function(t) {
-    style.info('tmstyle://' + path.join(__dirname,'fixtures-invalid-yaml'), function(err, source) {
+    style.info('tmstyle://' + path.join(__dirname,'fixtures-invalid yaml'), function(err, source) {
         t.ok(err);
         t.ok(/^JS-YAML/.test(err.toString()));
         t.end();
@@ -273,19 +428,44 @@ test('style.toXML: compiles data params', function(t) {
     });
 });
 
+test('style.toXML: compiles raster', function(t) {
+    style.toXML({
+        id:'tmstyle:///tmp-1234',
+        source:'mapbox:///mapbox.satellite',
+        styles:{'style.mss': '#_image { raster-opacity:1; }'}
+    }, function(err, xml) {
+        t.ifError(err);
+        t.ok(/<Map srs/.test(xml));
+        t.ok(/<Layer name="_image"/.test(xml), 'includes _image layer');
+        t.ok(/<Style name="_image"/.test(xml), 'includes style for _image layer');
+        t.ok(/<RasterSymbolizer opacity="1"/.test(xml), 'includes raster opacity');
+        t.ok(/<Parameter name="source"><\!\[CDATA\[mapbox:\/\/\/mapbox.satellite\]\]>/.test(xml));
+        t.end();
+    });
+});
+
+test('style.layervalidate: fails if layers is not an array', function(t) {
+    var err = style.layervalidate('foo');
+    t.equal(err.toString(), 'Error: Layers must be an array')
+    t.end();
+});
+
+test('style.layervalidate: fails on invalid characters', function(t) {
+    var err = style.layervalidate(['foo','foo.bar','foo/bar']);
+    t.equal(err.toString(), 'Error: Invalid characters in layer foo/bar')
+    t.end();
+});
+
+test('style.layervalidate: saves with valid layer names', function(t) {
+    var err = style.layervalidate(['foo','foo.bar', 'foo.bar-bar']);
+    t.ifError(err);
+    t.end();
+});
+
 test('style.upload: uploads stylesheet', function(t) {
     var id = 'tmstyle://' + __dirname + '/fixtures-upload';
     var cache = path.join(tmppath, 'cache');
-    style.upload({
-        id: id,
-        oauth: {
-            account: 'test',
-            accesstoken: 'testaccesstoken'
-        },
-        cache: cache,
-        mapbox: 'http://localhost:3001'
-    },
-    function(err, info){
+    style.upload(id, function(err, info){
         t.ifError(err);
         t.assert(!fs.existsSync(path.join(cache, 'package-' + info._prefs.mapid + '.tm2z')), 'file unlinked');
         t.assert(/test\..{8}/.test(info._prefs.mapid), 'mapid correctly generated');
@@ -295,28 +475,13 @@ test('style.upload: uploads stylesheet', function(t) {
 });
 
 test('style.upload: errors on unsaved id', function(t) {
-    style.upload({
-        id: style.tmpid(),
-        oauth: {
-            account: 'test',
-            accesstoken: 'testaccesstoken'
-        },
-        cache: path.join(tmppath, 'cache'),
-        mapbox: 'http://localhost:3001'
-    },
-    function(err, info){
-        t.equal(err.message, "Style must be saved first");
+    style.upload(style.tmpid(), function(err, info){
+        t.equal(err.message, 'Style must be saved first');
         t.end();
     });
 });
 
-test('cleanup', function(t) {
-    testutil.cleanup();
-    try { fs.unlinkSync(path.join(tmppath, 'app.db')); } catch(err) {}
-    try { fs.rmdirSync(path.join(tmppath, 'cache')); } catch(err) {}
-    try { fs.rmdirSync(tmppath); } catch(err) {}
-    server.close(function() {
-        t.end();
-    });
+test('cleanup ' + __filename, function(t) {
+    server.close(function() { t.end(); });
 });
 

@@ -1,20 +1,46 @@
-language: node_js
+language: cpp
 
-node_js:
-  - "0.10"
+compiler:
+  - gcc
+
+os:
+  - linux
+  - osx
 
 env:
+  matrix:
+  # NOTE: do not increment the NODE_VERSION without
+  # reading the "Node.js Version" in CONTRIBUTING.MD
+  # Also: only one job should be marked PACKAGABLE otherwise
+  # published binaries will conflict since they are not versioned
+  # on NODE_VERSION or ATOM_VERSION
+  - NODE_VERSION="0.10.40" ATOM_VERSION="0.21.1" PACKAGABLE=true
   global:
-  - secure: "VaWSqPRCVqp+7bP7zYrrASXPO9Po5hX1+YaCkaGHdET9ybwejWUUPpAZ/Yfd8PrjRuzkXOWDKGL3GDbr7GbLCvD6GxXmo9WqrJMQpdzru0Gqa7p67dbA3swBA+E3QaBvcRThdPHBP7xu11+0P2K8sI7XZLGix8ebfMZZPRDfjbY="
-  - secure: "ZpfehiS1S06Z9FZ1KtGOp4mdLxWj1+Kyr4kdC+525+HnVe1eMHGDyLeCK5z6vUt2G1tZ/FxGNLVQDIlwsXSbb0mOIqt/HPr1K9r3jKuPkqnrH01xiXnnrp09+NJO0E3qQlmoeyEk5mSuM5UQN1uSh7FiJC46etflhtOUs/oEjfo="
+  - secure: "EXgVgtayyyxt7flmPhwKZIvkqfkpX1TnrX/EX7ZEQ36TuZGYYX5OXjLTtXWk9sSE6l6O3wRewpkou2PvQQpX25yOI8XYD8vBjx3ymt1lg5RS8nTDZO0XHsd0aTV7JxJCyZGCkIYXvVRPpVbLDbGwULhJe55p8YYKx/lohDB3FYM="
+  - secure: "YvtR+B6yC+MxsU7tP6FCEHKLZoRfvlfwX5HSs8eAYWxqrZmIqJTbavSlj4bQ919szyQ1vZ8wTMkXd/8tCqWARTyWA8tLOHgXm/ZAlxdtdtotyZzNsbC0FmtJHF/wmaQcJ4lX2vcWWhOwtEetEULO6Hv0xGiW26aK+Jp240f6NJE="
+  - secure: "FxiGeOfdx5gi6F9axPog/9ErQN7ekvSpWTLgkX5ELJGhYncl0jOyvpkJhQan/hqf6kk4SG8+JVB+R4YyN2pwh2CYZ0jNEuLvApFrIt9YRKcnMbeBkjDbAq8ZcOVm2Zjtl22N0qLWLbvUsf71AM1S9s7a8yJL/Ux62IJQxA6HDic="
 
 # http://about.travis-ci.org/blog/2013-11-29-postgresql-92-93-now-available/
-addons:
-  postgresql: "9.3"
+# addons:
+#   postgresql: "9.3"
+# before_install:
+#  - createdb template_postgis
+#  - psql -c "CREATE EXTENSION postgis" template_postgis
 
 before_install:
- - createdb template_postgis
- - psql -c "CREATE EXTENSION postgis" template_postgis
+- git clone https://github.com/creationix/nvm.git ../.nvm && source ../.nvm/nvm.sh
+- nvm install $NODE_VERSION
+- nvm use $NODE_VERSION
+- node --version
+- npm --version
+# install c++11 capable libstdc++ without sudo
+- if [[ $(uname -s) == 'Linux' ]]; then wget https://launchpad.net/~ubuntu-toolchain-r/+archive/ubuntu/test/+files/libstdc%2B%2B6_4.8.1-2ubuntu1~12.04_amd64.deb && dpkg -x libstdc++6_4.8.1-2ubuntu1~12.04_amd64.deb ./ && export LD_PRELOAD=$(pwd)/usr/lib/x86_64-linux-gnu/libstdc++.so.6; fi
+# TODO: attempt to make build-travis sudoless
+- ./scripts/build-travis.sh $TRAVIS_COMMIT
+
+install:
+- npm install --fallback-to-build=false
+- python test/check_shared_libs.py node_modules/
 
 before_script:
  - npm ls
@@ -22,3 +48,5 @@ before_script:
 script:
  - npm test
  - ./test/test-client.js
+ - ./jekyll-test.sh
+

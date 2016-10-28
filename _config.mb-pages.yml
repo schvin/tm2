@@ -1,0 +1,21 @@
+url: https://www.mapbox.com
+api: https://www.mapbox.com/core
+tileApi: https://api.tiles.mapbox.com
+source: website
+permalink: /:title
+baseurl: /mapbox-studio
+highlighter: true
+mapboxjs: v2.1.7
+tileapi: 'https://api.tiles.mapbox.com'
+rdiscount:
+  extensions: [smart]
+defaults:
+- scope:
+    path: ""
+    type: post
+  values:
+    layout: studiodoc
+    date: 0000-01-01
+
+### latest release
+release: v0.3.7

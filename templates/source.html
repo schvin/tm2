@@ -3,60 +3,68 @@
 
 <head>
   <meta charset='UTF-8'/>
-  <link href='/app/icon.png' rel='apple-touch-icon' />
-  <link href='/ext/codemirror/codemirror.css' rel='stylesheet' />
-  <link href='/ext/mapbox.css' rel='stylesheet' />
-  <link href='/ext/base/base.css' rel='stylesheet' />
-  <link href='/app/app.css' rel='stylesheet' />
-  <link href='/app/source.css' rel='stylesheet' />
-  <script src='/ext/underscore-min.js'></script>
-  <script src='/ext/codemirror/codemirror.js'></script>
-  <script src='/ext/codemirror/runmode.js'></script>
-  <script src='/ext/codemirror/sql.js'></script>
-  <script src='/ext/jquery-2.0.3.min.js'></script>
-  <script src='/ext/jquery.sortable.js'></script>
-  <script src='/ext/sexagesimal.js'></script>
-  <script src='/ext/backbone.js'></script>
-  <script src='/ext/mapbox.js'></script>
-  <script src='/app/cartoref.js'></script>
-  <script src='/app/lib.js?_=<%= +new Date %>'></script>
-  <script src='/app/source.js?_=<%= +new Date %>'></script>
+  <link href='/app/icon.png?<%=obj.nocache%>' rel='apple-touch-icon' />
+  <link href='/ext/codemirror/codemirror.css?<%=obj.nocache%>' rel='stylesheet' />
+  <link href='/ext/mapbox.css?<%=obj.nocache%>' rel='stylesheet' />
+  <link href='/base/base.css?<%=obj.nocache%>' rel='stylesheet' />
+  <link href='/app/app.css?<%=obj.nocache%>' rel='stylesheet' />
+  <link href='/app/source.css?<%=obj.nocache%>' rel='stylesheet' />
+  <script src='/ext/underscore-min.js?<%=obj.nocache%>'></script>
+  <script src='/ext/codemirror/codemirror.js?<%=obj.nocache%>'></script>
+  <script src='/ext/codemirror/runmode.js?<%=obj.nocache%>'></script>
+  <script src='/ext/codemirror/sql.js?<%=obj.nocache%>'></script>
+  <script src='/ext/jquery-2.0.3.min.js?<%=obj.nocache%>'></script>
+  <script src='/ext/jquery.sortable.js?<%=obj.nocache%>'></script>
+  <script src='/ext/sexagesimal.js?<%=obj.nocache%>'></script>
+  <script src='/ext/backbone.js?<%=obj.nocache%>'></script>
+  <script src='/ext/mapbox.js?<%=obj.nocache%>'></script>
+  <script src='/app/sourceref.js?<%=obj.nocache%>'></script>
+  <script src='/app/lib.js?<%=obj.nocache%>'></script>
+  <script src='/app/source.js?<%=obj.nocache%>'></script>
+  <script src='/app/atom.js?<%=obj.nocache%>'></script>
+  <%= this.analytics(obj) %>
   <title><%= source.name %></title>
 </head>
 
-<body id='view' class='<%= agent %> <%= source._tmp ? 'tmp' : '' %> clip dark'><div id='app' class='pin-top pin-bottom'>
+<body id='view' class='<%= agent %> <%= source._tmp ? 'tmp' : '' %> <%= isMapboxAPI ? 'api-mapbox' : 'api-offline' %> clip dark'><div id='app' class='pin-top pin-bottom mobile-cols'>
 
 <a id='settings'></a>
+<a id='docs'></a>
 <a id='user'></a>
 
 <div id='perf'></div>
 
-<div id='modal'>
-  <div class='modal-mask fill-darken2 animate'></div>
-  <div id='modal-content' class='limiter contain modal-content animate'></div>
-</div>
+<div id='modal-content' class='modal-content animate'></div>
 
-<div id='drawers' class='animate fill-dark dark col3 offcanvas-left animate pin-left z10 clip'>
+<div id='drawers' class='animate fill-dark col3 offcanvas-left animate pin-left z10 clip'>
 
-  <form id='settings-drawer' class='js-settings-form drawer col12 animate offcanvas-left'>
+  <form id='settings-drawer' class='drawer col12 animate offcanvas-left'>
     <div class='pin-top pad1 keyline-bottom'>
       <h3>Settings</h3>
       <a href='#' class='icon x pin-right pad1 quiet'></a>
     </div>
     <div class='pin-left top1 scroll-styled'>
-      <fieldset class='clearfix pad1x pad2y keyline-bottom contain'>
-        <% if (source._tmp) { %>
-        <div class='z10 pin-top pin-bottom col12 pad1x fill-disable on-tmp'></div>
-        <% } %>
-        <section class='space-bottom1'>
+      <fieldset class='clearfix pad1y keyline-bottom contain'>
+        <div class='z10 pin-top pin-bottom col12 pad1x fill-disable on-tmp on-changed'>
+        </div>
+        <div class='on-tmp on-changed z10 pad0y pad1x micro center truncate pin-top fill-dark keyline-top'>
+          <strong class='icon floppy'>Save source</strong> to enable upload
+        </div>
+        <section class='pad1 contain on-api-mapbox'>
           <div id='mapstatus-mapid' class='pad0y pad1x center truncate round-top space small animate fill-darken1'>
             <strong>Map ID</strong>
             <a href='https://www.mapbox.com/data/' class='quiet js-mapid' target='_blank'><%= _(source._prefs.mapid).escape() || 'Source not uploaded' %></a>
           </div>
           <a href='/upload?id=<%= source.id %>' class='col12 short button round-bottom icon up'>Upload to Mapbox</a>
         </section>
-        <section>
-          <a href='/mbtiles?id=<%= source.id %>' class='col12 short button icon package'>MBTiles Export</a>
+        <section class='pad1 contain on-api-offline'>
+          <a href='/mbtiles?id=<%= source.id %>' class='col12 short button icon package'>Export to MBTiles</a>
+        </section>
+        <section class='small center'>
+          <a href='#' class='js-sourcenewstyle inline pad0 small col12 icon paint'>Create style from source</a>
+        </section>
+        <section class='small center on-api-mapbox'>
+          <a href='/mbtiles?id=<%= source.id %>' class='icon package'>Export to MBTiles</a>
         </section>
       </fieldset>
       <fieldset class='pad1x'>
@@ -73,73 +81,86 @@
           <input class='stretch short small' name='attribution' type='text' value='<%= _(source.attribution).escape() %>'></textarea>
         </section>
       </fieldset>
-      <fieldset class='pad1x'>
-        <div class='pad1 keyline-all round'>
-          <section class='space-bottom0 clearfix'>
-            <label class='inline col4'>Minzoom</label>
-            <input id='minzoom' name='minzoom' class='min' type='range' value='<%= source.minzoom %>' min='0' max='22' step='1' onchange='rangeHandler(this, "max", "#maxzoom");' />
-            <span class='small quiet code inline range' id='minzoom-val'><%= source.minzoom %></span>
+      <fieldset class='pad1x pad2y keyline-top'>
+          <section class='space-bottom2 clearfix'>
+            <label class='micro inline col4'>Center</label>
+            <div class='micro fill-darken1 pad0x clip col8 contain round'>
+              <span class='js-savedCenter'><%= source.center[0].toFixed(4) %>,<%= source.center[1].toFixed(4) %>,<%= source.center[2] %></span>
+              <a href='#settings' class='js-lockCenter icon lock pin-right round-right fill-darken2-onactive <%= !source._prefs.saveCenter ? 'active' : '' %>'></a>
+            </div>
           </section>
-          <section class='space-bottom0 clearfix'>
-            <label class='inline col4'>Maxzoom</label>
-            <input id='maxzoom' name='maxzoom' class='max' type='range' value='<%= source.maxzoom %>' min='0' max='22' step='1' onchange='rangeHandler(this, "min", "#minzoom");' />
-            <span class='small quiet code inline range' id='maxzoom-val'><%= source.maxzoom %></span>
+          <section class='space-bottom2 clearfix'>
+            <label class='micro inline col4'>Minzoom</label>
+            <div class='col8'>
+              <input id='minzoom' name='minzoom' class='min zoomrange' type='range' value='<%= source.minzoom %>' min='0' max='16' step='1' oninput='rangeHandler(this, "max", "#maxzoom");' />
+              <span class='micro quiet inline range' id='minzoom-val'><%= source.minzoom %></span>
+            </div>
           </section>
-        </div>
+          <section class='space-bottom2 clearfix'>
+            <label class='micro inline col4'>Maxzoom</label>
+            <div class='col8'>
+              <input id='maxzoom' name='maxzoom' class='max zoomrange' type='range' value='<%= source.maxzoom %>' min='0' max='16' step='1' oninput='rangeHandler(this, "min", "#minzoom");' />
+              <span class='micro quiet inline range' id='maxzoom-val'><%= source.maxzoom %></span>
+            </div>
+          </section>
       </fieldset>
     </div>
   </form>
 
-  <div id='user-drawer' class='drawer col12 animate offcanvas-left'>
+  <div id='docs-drawer' class='drawer col12 animate offcanvas-left'>
     <div class='pin-top keyline-botom pad1 keyline-bottom'>
-      <h3>Projects</h3>
+      <h3>Documentation</h3>
+      <a href='#' class='icon x pin-right pad1 quiet'></a>
+    </div>
+    <div class='col12 pin-left top1 scroll-styled'>
+    <%=this['sourcereference']({sourceRef: sourceRef}) %>
+
+    </div>
+  </div>
+
+
+  <div id='user-drawer' class='drawer col12 animate offcanvas-left'>
+    <div class='row1 pin-top keyline-botom pad1 keyline-bottom'>
+      <h3>Styles & Sources</h3>
       <a href='#' class='icon x pin-right pad1 quiet'></a>
     </div>
     <%= this.history(obj) %>
   </div>
 
+<!-- animate -->
+  <div class='drawer col12 animate offcanvas-left'>
+
+  </div>
+<!-- end animation -->
+
 </div>
 
-<div id='full' class='clip animate pin-left'>
-  <div id='map' class='animate dark' style='background-color:<%=source.background%>;'></div>
-  <div id='map-overlay'></div>
+<div id='full' class='clip dark fill-dark animate pin-left'>
+  <div id='map' class='animate fill-canvas' style='background-color:<%=source.background%>;'></div>
+  <div class='loading' id='map-overlay'></div>
   <div id='map-errors'></div>
 
-  <form id='bookmark' class='tip-bottom z1 contain fill-dark round animate'>
-    <input id='addbookmark' type='text' class='col12 clean round small' value='' placeholder='Name a bookmark' autocomplete='off' />
-    <div class='pin-topright pad0'>
-      <input type='submit' class='short quiet button' value='Add' />
-    </div>
-    <ul id='bookmark-list' class='clip fill-dark scroll-styled round-bottom'></ul>
-  </form>
-
-  <form id='search' class='tip-bottom z1 contain fill-dark round animate'>
+  <form id='search' class='z10 contain round animate search-results'>
     <input id='dosearch' type='text' class='col12 clean small round' value='' placeholder='Search' autocomplete='off' />
-    <div class='pin-topleft pad1'>
-      <span class='icon search'></span>
-    </div>
-    <ul id='search-results' class='clip fill-dark dark scroll-styled round-bottom'></ul>
+    <ul id='search-results' class='clip scroll-styled round-bottom'></ul>
   </form>
+  <div class='map-controls pin-top row1'>
+    <div class='pin-left z1 pad0 row1 truncate'>
+      <a href='#search' class='search-n button short icon search quiet'></a>
+      <a href='#' class='search-y button short icon active icon search quiet'></a>
 
-  <div id='zoomedto' class='fill-dark contain z<%=source.center[2]%>'></div>
+      <a id='' href='#full' title='Toggle fullscreen' class='button short icon fullscreen full-n quiet'></a>
+      <a href='#' title='Exit fillscreen' class='button short icon quiet active fullscreen full-y'></a>
 
-  <div id='map-controls' class='z10'>
-    <div class='fill-dark inline'>
-      <a href='#search' title='Search' class='search-n keyline-right icon search quiet '></a><!--
-      --><a href='#' title='Close search' class='search-y icon keyline-right search fill-dark dark'></a><!--
-      --><a href='#bookmark' title='Bookmarks' class='bookmark-n icon marker quiet'></a><!--
-      --><a href='#' title='Close bookmarks' class='bookmark-y icon marker fill-dark dark'></a>
+      <div class='pill'>
+      <a id='zoom-in' class='button short icon plus quiet'></a><!--
+   --><a id='zoom-out' class='button short icon minus quiet'></a>
+      </div>
     </div>
-    <a href='#full' title='Toggle fullscreen' class='full-n inline fill-dark icon fullscreen quiet'></a>
-    <a href='#' title='Exit fillscreen' class='full-y fill-dark dark icon fullscreen'></a>
-    <div class='inline fill-dark'>
-      <a href='#' id='zoom-in' title='Zoom in' class='icon plus keyline-right quiet'></a><!--
-      --><a href='#' id='zoom-out' title='Zoom out' class='icon minus keyline-right quiet'></a>
+    <div class='pin-top text-right fill-dark z0 pad0 row1'>
+      <span id='map-center' class='quiet inline micro strong pad0y align-top js-mapCenter'></span>
+      <div id='zoomedto' class='align-top text-right inline contain zoom<%=source.center[2]%>'></div>
     </div>
-  </div>
-  <div id='refresh' class='animate fill-darken2 col12 pad2 pin-bottom'>
-    <span class='icon info'>To view visibility adjustments, <a href='#' class='js-save'>Save now</a>.</span>
-    <a href='#' class='quiet pin-topright inline pad1 icon close'></a>
   </div>
 </div>
 
@@ -147,16 +168,18 @@
   var revlayers = source.Layer.slice(0);
   revlayers.reverse();
 %>
+
+
 <div id='source-ui' class='z1 animate fill-dark dark col6 pin-right'>
+
+<!-- add animation for code -->
+
+<!-- end animation for code -->
+
+
   <div id='layers'>
-    <div class='fill-darken1 clearfix'>
-      <div class='col6 pad1'>
-        <a href='#' class='js-addlayer short button col12 icon plus'>New layer</a>
-      </div>
-      <div class='col6 pad1 text-right contain'>
-        <div class='z10 pin-top pin-bottom inline fill-disable on-tmp'></div>
-        <a href='#' class='js-newstyle quiet inline pad0 small col12 rcon next'>Create style from this source</a>
-      </div>
+    <div class='fill-darken1 pad1 clearfix'>
+      <a href='#' class='js-addlayer short button col6 icon plus'>New layer</a>
     </div>
     <nav class='clip row1 col12 keyline-top keyline-bottom fill-dark contain z1'>
       <strong class='col6 pad1'>Layers</strong>
@@ -166,40 +189,45 @@
         <span class='pad0x pad1y keyline-left col4 source-label'>Delete</span>
       </div>
     </nav>
-    <div class='js-layer-content layer-content pin-left col12 scroll-styled'><!--
-      --><%
+
+    <div class='col12' id='editor'>
+    <%
+      _(revlayers).each(_(function(l) {
+        var type = (l.Datasource && l.Datasource.type);
+        var vlayer = _(source.vector_layers).find(function(v) { return v.id === l.id; });
+        if (this['layer' + type]) print(this['layer' + type](_({
+            tm: tm,
+            fields: vlayer ? vlayer.fields : null
+        }).extend(l)));
+      }).bind(this));
+    %>
+    </div>
+
+    <div class='js-layer-content layer-content pin-left col12 scroll-styled'>
+    <%
        _(revlayers).each(_(function(l) {
         print(this.layeritem(_({_prefs:source._prefs}).extend(l)));
-      }).bind(this)); %><!--
-    --></div>
+      }).bind(this));
+    %>
+    </div>
     <%= this.emptystate({message:'You haven\'t imported any data layers yet. <a href="#" class="js-addlayer">Add one now</a>.'}) %>
   </div>
 </div>
 
-<div class='z10' id='editor'>
-<%
-  _(revlayers).each(_(function(l) {
-    var type = (l.Datasource && l.Datasource.type);
-    if (this['layer' + type]) print(this['layer' + type](_({
-        tm: tm,
-        fields: source.vector_layers.filter(function(v) { return v.id === l.id })[0].fields
-    }).extend(l)));
-  }).bind(this));
-%>
-</div>
-
 <div id='toolbar' class='center pad1 dark z10'>
   <% if (source._tmp) { %>
-  <a class='toolbar-button strong icon save js-saveas floppy' href='#'>Save as</a>
+  <a class='toolbar-button strong icon saveas js-saveas floppy' href='#'>Save as</a>
   <% } else { %>
-  <a class='toolbar-button strong icon save js-save floppy' href='#'>Save</a>
+  <a class='toolbar-button strong icon save js-save floppy' href='#'><span class='saved-y'>Save</span><span class='saved-n'>Saved</span></a>
   <% } %>
   <a class='toolbar-button strong icon settings-n sprocket' href='#settings'>Settings</a>
   <a class='toolbar-button strong icon settings-y sprocket active fill-lighten1' href='#'>Settings</a>
+  <a class='toolbar-button strong icon docs-n info' href='#docs'>Docs</a>
+  <a class='toolbar-button strong icon docs-y info active fill-lighten1' href='#'>Docs</a>
 
   <div class='user-icon pad1 pin-bottom'>
-    <a class='toolbar-button strong user-n' href='#user'><div class='icon inline avatar dot' style='background-image:url(<%= user.avatar %>)' /></div>Projects</a>
-    <a class='toolbar-button strong user-y active fill-lighten1' href='#'><div class='inline icon avatar dot' style='background-image:url(<%= user.avatar %>)' /></div>Projects</a>
+    <a class='toolbar-button strong user-n' href='#user'><div class='icon inline avatar dot' style='background-image:url(<%= user.avatar %>)' /></div>Styles & Sources</a>
+    <a class='toolbar-button strong user-y active fill-lighten1' href='#'><div class='inline icon avatar dot' style='background-image:url(<%= user.avatar %>)' /></div>Styles & Sources</a>
   </div>
 </div>
 
@@ -212,8 +240,10 @@ templates.modalbrowsersave = <%= this.modalbrowsersave.source %>;
 templates.modalbrowseropen = <%= this.modalbrowseropen.source %>;
 templates.modaladdlayer = <%= this.modaladdlayer.source %>;
 templates.modalupdatename = <%= this.modalupdatename.source %>;
-templates.modalmessage = <%= this.modalmessage.source %>;
+templates.modalconfirm = <%= this.modalconfirm.source %>;
 templates.modalerror = <%= this.modalerror.source %>;
+templates.modalnewproject = <%= this.modalnewproject.source %>;
+templates.newproject = <%= this.newproject.source %>;
 templates.layeritem = <%= this.layeritem.source %>;
 templates.layerfields = <%= this.layerfields.source %>;
 templates.layershape = <%= this.layershape.source %>;
@@ -221,24 +251,29 @@ templates.layerpostgis = <%= this.layerpostgis.source %>;
 templates.layersqlite = <%= this.layersqlite.source %>;
 templates.layercsv = <%= this.layercsv.source %>;
 templates.layerogr = <%= this.layerogr.source %>;
+templates.layergdal = <%= this.layergdal.source %>;
 templates.xraycolor = <%= this.xraycolor.source %>;
 templates.xraypopup = <%= this.xraypopup.source %>;
-templates.modalnewstylecheck = <%= this.modalnewstylecheck.source %>;
+templates.modalsourcenewstyle = <%= this.modalsourcenewstyle.source %>;
+templates.layergeojson = <%= this.layergeojson.source %>;
+templates.layertopojson = <%= this.layertopojson.source %>;
 
 var tm = {};
-tm.srs = <%= JSON.stringify(tm.srs) %>;
+tm.srs = <%= saferstringify(tm.srs, null, 2) %>;
 
-var cwd = <%= JSON.stringify(cwd) %>;
-var source = <%= JSON.stringify(source) %>;
-var revlayers = <%= JSON.stringify(revlayers) %>;
+var cwd = <%= saferstringify(cwd, null, 2) %>;
+var source = <%= saferstringify(source, null, 2) %>;
+var examples = <%= saferstringify(examples, null, 2) %>;
+var revlayers = <%= saferstringify(revlayers, null, 2) %>;
+var isMapboxAPI = <%= isMapboxAPI %>;
 
-Source(templates, cwd, tm, source, revlayers);
+Source(templates, cwd, tm, source, revlayers, examples, isMapboxAPI);
 </script>
 
 <% if (test) { %>
-  <script>window.testParams = <%= JSON.stringify(test) %>;</script>
-  <script src='/app/test/tape.js'></script>
-  <script src='/app/test/app.test.source.js'></script>
+  <script>window.testParams = <%= saferstringify(test, null, 0) %>;</script>
+  <script src='/app/test/tape.js?<%=obj.nocache%>'></script>
+  <script src='/app/test/app.test.source.js?<%=obj.nocache%>'></script>
 <% } %>
 
 </body>
